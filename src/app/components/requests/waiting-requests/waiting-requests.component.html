@@ -1,0 +1,226 @@
+<p-toast></p-toast>
+<div class="card">
+
+  <div class="px-2 py-4 md:px-5 lg:px-5">
+    <div
+      class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+      <div class="mb-3 lg:mb-0">
+        <div class="text-3xl font-medium text-900 mb-3">Demandes En Attente</div>
+        <div class="text-500 mr-0 md:mr-3">Consulter les demandes des organisations en attente.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="col-12">
+      <div>
+        <p-table #dt [value]="organizations" responsiveLayout="scroll"
+          [globalFilterFields]="[ 'name']"
+          [rows]="10" [paginator]="true"
+          [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées" [rowHover]="true"
+          dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5>Demandes en attentes</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Recherche..." />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 5%">
+              </th>
+              <th pSortableColumn="code">
+                <div class="flex justify-content-center">Code
+                </div>
+              </th>
+              <th pSortableColumn="name">
+                <div class="flex justify-content-center">Nom
+                </div>
+              </th>
+              <th pSortableColumn="sector">
+                <div class="flex justify-content-center">Secteur d'activité
+                </div>
+              </th>
+              <th pSortableColumn="request_validation">
+                <div class="flex justify-content-center">Etat de Validation
+                </div>
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-organization>
+            <tr>
+              <td>
+              </td>
+              <td style="width:7%; min-width:10rem;">
+                <span class="p-column-title">Code</span>
+                <div class="flex justify-content-center">{{organization?.code }}</div>
+              </td>
+              <td style="width:7%; min-width:10rem;">
+                <span class="p-column-title">Code</span>
+                <div class="flex justify-content-center">{{organization?.name }}</div>
+              </td>
+              <td style="width:5%; min-width:10rem;">
+                <span class="p-column-title">University</span>
+                <div class="flex justify-content-center">{{organization?.sector?.name}}</div>
+              </td>
+              <td style="width:5%; min-width:10rem;">
+                <span class="p-column-title">request_validation</span>
+                <div class="flex justify-content-center">
+                  <div *ngIf="organization?.status == null ; else validation">
+                    <span class="customer-badge status-new">En Attente</span>
+                  </div>
+                  <ng-template #validation>
+                    <span *ngIf="organization?.status == true"
+                      class="customer-badge status-qualified">Validé</span>
+                    <span *ngIf="organization?.status == false"
+                      class="customer-badge status-unqualified">Rejeté</span>
+                  </ng-template>
+                </div>
+              </td>
+              <td style="width:12%; min-width:10rem;">
+                <div class="flex justify-content-center">
+                  <button pButton pRipple icon="pi pi-eye" class="p-button-rounded p-button-info mr-2 "
+                    (click)="viewRequest(organization)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center">Aucun Organisations en attente.</td>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="loadingbody" let-columns="columns">
+            <tr style="height:100%">
+              <td>
+                <p-skeleton></p-skeleton>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ---------------------------------request dialog------------------------------------ -->
+
+<p-dialog [(visible)]="organizationDialog" (onHide)="hideDialog()" [style]="{width: '60%'}" header="Consulter Demande"
+  [modal]="true" class="p-fluid">
+  <ng-template pTemplate="content">
+    <div class="grid">
+      <div class="col-7">
+        <div class="text-500 mb-5">Détails d'organisation</div>
+        <ul class="list-none p-0 m-0">
+            <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                <div class="text-500 w-6 md:w-4 font-medium">Code</div>
+                <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+                  <div *ngIf="dataLoaded" class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+                    <p-chip [label]="organization?.code" class="mr-2"></p-chip>
+                    </div>
+                  <p-skeleton *ngIf="!dataLoaded" width="10rem" height="1.2rem"></p-skeleton>
+                </div>
+              </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">Nom</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{organization?.name}}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="10rem" height="1.2rem"></p-skeleton>
+            </div>
+          </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">Secteur d'Activité</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{organization?.sector?.name}}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="17rem" height="1.2rem"></p-skeleton>
+
+            </div>
+          </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">Pays</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{organization?.country}}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="17rem" height="1.2rem"></p-skeleton>
+
+            </div>
+          </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">Adresse</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{organization?.address}}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="10rem" height="1.2rem"></p-skeleton>
+            </div>
+          </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">E-Mail</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{ organization?.email }}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="17rem" height="1.2rem"></p-skeleton>
+
+            </div>
+          </li>
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-4 font-medium">Numéro du Téléphone</div>
+            <div class="text-900 w-full md:w-6 md:flex-order-0 flex-order-1">
+              <div *ngIf="dataLoaded">{{organization?.phone}}</div>
+              <p-skeleton *ngIf="!dataLoaded" width="17rem" height="1.2rem"></p-skeleton>
+
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="col-1">
+        <p-divider layout="vertical">
+        </p-divider>
+      </div>
+      <div class="col-4 align-items-center justify-content-center text-center">
+      <div class="text-500 text-center mt-2">Demande (Cliquez pour agrandir)</div>
+
+        <div class="justify-content-center text-center " style="width:100%">
+          <div *ngIf="organization?.document != null">
+            <pdf-viewer id="pdfViewer" (click)="viewpdf()" [src]="document_pdfSrc" [original-size]="false" style="width: 100%; height: 420px"></pdf-viewer>
+
+            <a style="margin-top: 10px;" [href]="document_fileUrl" [download]="organization?.document?.fileName">
+              <button style="width: 100%;" pButton type="button" label="Télécharger Demande" icon="pi pi-download"></button>
+            </a>
+          </div>
+          <small [hidden]="organization?.document != null">*La demande d'organisation n'est pas disponsible</small>
+        </div>
+      </div>
+
+
+    </div>
+    <p-divider layout="horizontal" align="center">
+      <b>Action</b>
+    </p-divider>
+    <div>
+      <div class="grid">
+        <div class="col-3"></div>
+        <div class="col-6">
+          <p-selectButton [options]="validationSelect" [(ngModel)]="selectValue" optionLabel="name"
+          (onOptionClick)="onOptionClick($event)">
+          </p-selectButton>
+        </div>
+        <div class="col-3"></div>
+      </div>
+
+    </div>
+
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
+    <button pButton pRipple label="Enregistrer" icon="pi pi-check" class="p-button-text" (click)="save(organization?.id)"
+      [disabled]="selectValue == null"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog header="PDF" [(visible)]="pdfView" [style]="{width: '80%'}">
+    <pdf-viewer [src]="document_pdfSrc" [original-size]="false" style="width: 100%; height: 800px"></pdf-viewer>
+</p-dialog>

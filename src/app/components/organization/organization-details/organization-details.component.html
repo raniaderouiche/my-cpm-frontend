@@ -1,0 +1,159 @@
+
+<div class="grid">
+  <div class="col-8">
+    <div>
+      <div class="surface-card p-4 shadow-2 border-round">
+        <div class="font-medium text-3xl text-900 mb-3">À Propos</div>
+        <div class="text-500 mb-5">Détails Organisation.</div>
+        <ul class="list-none p-0 m-0">
+
+          <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Code</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1"><p-chip [label]="organization?.code" class="mr-2"></p-chip></div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Nom</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.name}}</div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Secteur d'activité</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.sector?.name}}</div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Pays</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.country}}</div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Région</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.region}}</div>
+        </li>
+
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">E-Mail</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.email}}</div>
+            <div class="w-6 md:w-2 flex justify-content-end"><a href="mailto:{{organization?.email}}" pButton pRipple icon="pi pi-send"
+              class="p-button-rounded p-button-secondary p-button-outlined mr-2 mb-2"></a></div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Adresse</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1 line-height-3">{{organization?.address}}</div>
+          </li>
+
+          <li class="flex align-items-center py-5 px-2 border-top-1 border-bottom-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Numéro du Téléphone</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.phone}}</div>
+        </li>
+
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-4">
+    <div class="grid">
+      <div class="col-12">
+        <div class="card">
+          <div class="justify-content-between text-center">
+            <div class="text-center">
+                <!-- <span class="block text-500 font-medium mb-3">Logo</span> -->
+                <img *ngIf="organization?.image" [src]="getSrcFromCustomFile(organization?.image)" alt="" width="200" height="200"/>
+                <img *ngIf="!organization?.image" src="./assets/layout/images/logo-placeholder-image.png" alt="" width="200" height="200"/>
+            </div>
+        </div>
+      </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card">
+          <div class="justify-content-between text-center">
+            <div class="text-center">
+              <div *ngIf="organization?.document != null">
+                <pdf-viewer [src]="document_pdfSrc" [original-size]="false" style="width: 100%; height:380px">
+                </pdf-viewer>
+                <a style="margin-top: 10px;" [href]="document_fileUrl"
+                  [download]="organization?.document?.fileName">
+                  <button style="width: 100%;" pButton type="button" label="Télécharger" icon="pi pi-download"></button>
+                </a>
+              </div>
+              <small [hidden]="organization?.document != null">*Fichier n'est pas disponsible</small>
+
+            </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+
+  </div>
+
+</div>
+
+<div class="grid">
+  <div class="col-6">
+    <div class="surface-card p-4 shadow-2 border-round">
+      <div>
+        <div class="mb-5"><h5>Détails Directeur Général</h5></div>
+          <ul class="list-none p-0 m-0">
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Nom</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.directorLastName}}</div>
+              </li>
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Prénom</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.directorFirstName}}</div>
+              </li>
+              <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">E-Mail</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.directorEmail}}</div>
+                  <div class="w-6 md:w-2 flex justify-content-end">
+                      <a href="mailto:{{organization?.directorEmail}}" pButton pRipple icon="pi pi-send" class="p-button-rounded p-button-secondary p-button-outlined mr-2 mb-2"></a>
+                  </div>
+              </li>
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Numéro du Téléphone</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{organization?.directorPhone}}</div>
+              </li>
+
+          </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-6">
+    <div class="surface-card p-4 shadow-2 border-round">
+      <div>
+        <div class="mb-5"><h5>Détails Administrateur</h5></div>
+          <ul class="list-none p-0 m-0">
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Nom</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{admin?.firstName}} {{admin?.lastName}}</div>
+              </li>
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Username</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{admin?.username}}</div>
+              </li>
+              <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">E-Mail</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{admin?.email}}</div>
+                  <div class="w-6 md:w-2 flex justify-content-end">
+                      <a href="mailto:{{admin?.email}}" pButton pRipple icon="pi pi-send" class="p-button-rounded p-button-secondary p-button-outlined mr-2 mb-2"></a>
+                  </div>
+              </li>
+              <li class="flex align-items-center py-4 px-2 border-top-1 surface-border flex-wrap">
+                  <div class="text-500 w-6 md:w-2 font-medium">Numéro du Téléphone</div>
+                  <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">{{admin?.phone}}</div>
+              </li>
+
+          </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+

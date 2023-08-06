@@ -1,0 +1,747 @@
+<p-toast></p-toast>
+
+<div class="grid ">
+  <div class="col-12">
+    <div class="card">
+      <div class="surface-section">
+        <div class="px-2 py-4 md:px-5 lg:px-5">
+          <div class="flex md:align-items-center md:justify-content-between flex-column md:flex-row pb-4 border-bottom-1 surface-border">
+            <div>
+              <div class="text-3xl font-medium text-900 mb-3">Marché: {{market?.name}}</div>
+            </div>
+          </div>
+          <div class="surface-section px-4 py-5 md:px-2 lg:px-1">
+            <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+              <div>
+                <div class="font-medium text-xl text-800">Controle de Saisie</div>
+                <div class="flex align-items-center text-700 flex-wrap">
+                  <div class="mr-5 flex align-items-center mt-3">
+                    <i class="pi pi-money-bill mr-2"></i>
+                    <span>Montant Planifié : {{market?.amount}} {{market?.unit}} </span>
+                  </div>
+                  <div class="mr-5 flex align-items-center mt-3">
+                    <span> Montant des BC Saisis : {{getSpentBudget()}} {{market?.unit}}</span>
+                  </div>
+                  <div class="flex align-items-center mt-3">
+                    <span> Montant des BC à Saisir : {{getRemainedBudget()}} {{market?.unit}}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="mt-6 md:mt-5 ml-0 md:ml-8 flex align-items-center">
+                <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" [ngStyle]="{height: '8px'}">
+                  <div class="bg-teal-500 h-full" [ngStyle]="{width: getUsedBudget() }"></div>
+                </div>
+                <span class="text-teal-500 ml-3 font-medium">{{getUsedBudget()}}</span>
+
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="card">
+      <p-fieldset [toggleable]="true"  [collapsed]="true">
+        <ng-template pTemplate="header">
+            <div class="flex align-items-center text-primary">
+                <span class="pi pi-user mr-2"></span>
+                <span class="font-bold text-lg">Détails de Marché</span>
+            </div>
+        </ng-template>
+        <div class="flex align-items-center justify-content-between mb-3">
+          <div class="text-500 mt-1">Marché {{market.type}}</div>
+          <button pButton pRipple icon="pi pi-pencil" class="p-button-text" (click)="openEditMarket()"
+            pTooltip="Modifier Marché" tooltipPosition="left"></button>
+        </div>
+        <ul class="list-none p-0 m-0">
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Désignation</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.name}}
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Code</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.code}}
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Secteur </div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.profession?.sector?.name}}
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Métier</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.profession?.name}}
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Budget</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.budget}}
+            </div>
+          </li>
+          <!-- <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Type</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.type}}
+            </div>
+          </li> -->
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Montant</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.amount}} {{market?.unit}}
+            </div>
+          </li>
+          <li class="flex align-items-center py-3 px-2 border-top-1 surface-border flex-wrap">
+            <div class="text-500 w-6 md:w-2 font-medium">Délai (en Jours)</div>
+            <div class="text-900 w-full md:w-8 md:flex-order-0 flex-order-1">
+              {{market?.limit}}
+            </div>
+          </li>
+
+        </ul>
+    </p-fieldset>
+    </div>
+
+    <div class="card">
+      <h5 class="mt-4">Bons de Commande</h5>
+        <p-table #dt [value]="market?.purchaseOrders" responsiveLayout="scroll" [globalFilterFields]="['code']"
+          [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées" [(selection)]="selectedOrders"
+          selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <div class="my-1">
+                <button [disabled]="isResponsable || isChefProjet" pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2"
+                  (click)="openNew()"></button>
+                <button [disabled]="isResponsable || isChefProjet" pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger"
+                  (click)="deletePurchaseOrders()" [disabled]="!selectedOrders || !selectedOrders.length"></button>
+              </div>
+              <div class="grid">
+                <div class="col mt-3">
+                  <label for="">Filtrer: </label>
+                </div>
+                <div class="col">
+                <p-columnFilter field="isValid" matchMode="equals" [showMenu]="false">
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                      <p-dropdown [ngModel]="value" [options]="statuses" placeholder="Tout" (onChange)="filter($event.value)">
+                          <ng-template let-option pTemplate="item">
+                              <div class="p-multiselect-representative-option">
+                                  <span class="ml-1">{{option.label}}</span>
+                              </div>
+                          </ng-template>
+                      </p-dropdown>
+                  </ng-template>
+              </p-columnFilter>
+            </div>
+              </div>
+
+
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText type="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Recherche..." />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th>
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="code">
+                <div class="flex justify-content-center">Code<p-sortIcon field="code"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="num">
+                <div class="flex justify-content-center">Numéro<p-sortIcon field="num"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="amount">
+                <div class="flex justify-content-center">Montant<p-sortIcon field="amount"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="startDate">
+                <div class="flex justify-content-center">Date Debut Travaux<p-sortIcon field="startDate"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="limit">
+                <div class="flex justify-content-center">Delais<p-sortIcon field="limit"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="isValid">
+                <div class="flex justify-content-center">Validation<p-sortIcon field="isValid"></p-sortIcon>
+                </div>
+              </th>
+              <th>
+
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-purchaseOrder>
+            <tr>
+              <td style="width:5%; min-width:5rem;">
+                <p-tableCheckbox [value]="purchaseOrder"></p-tableCheckbox>
+              </td>
+              <td style="width:10%; min-width:10rem;">
+                <span class="p-column-title">Code</span>
+                <div class="flex justify-content-center">{{purchaseOrder?.code}}</div>
+              </td>
+              <td style="width:10%; min-width:10rem;">
+                <span class="p-column-title">Numéro</span>
+                <div class="flex justify-content-center">{{purchaseOrder?.num}}</div>
+              </td>
+              <td style="width:15%; min-width:10rem;">
+                <span class="p-column-title">Montant</span>
+                <div class="flex justify-content-center">{{purchaseOrder?.amount}} {{market?.unit}}</div>
+              </td>
+              <td style="width:15%; min-width:10rem;">
+                <span class="p-column-title">Date Debut Travaux</span>
+                <div class="flex justify-content-center">{{purchaseOrder?.startDate | date:'dd/LL/yyyy'}}</div>
+              </td>
+              <td style="width:15%; min-width:10rem;">
+                <span class="p-column-title">Delais</span>
+                <div class="flex justify-content-center">{{purchaseOrder?.limit}} Jours</div>
+              </td>
+              <td style="width:10%; min-width:10rem;">
+                <span class="p-column-title">Validation</span>
+                <div class="flex justify-content-center">
+                  <p-tag [value]="purchaseOrder.validationState" [severity]="getSeverity(purchaseOrder.validationState)"></p-tag>
+                </div>
+              </td>
+              <td style="width:10%; min-width:10rem;">
+                <div class="flex justify-content-center">
+                  <button (click)="openArticles(purchaseOrder)" pButton pRipple type="button" label="Articles"
+                    icon="pi pi-shopping-cart" class="p-button-raised p-button-text p-button-plain"></button>
+                </div>
+              </td>
+              <td style="width:20%; min-width:10rem;">
+                <div class="flex justify-content-center">
+                  <button [disabled]="isResponsable || isChefProjet" pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                    (click)="editPurchaseOrder(purchaseOrder)"></button>
+                  <button [disabled]="isResponsable || isChefProjet" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger  mr-2"
+                    (click)="deletePurchaseOrder(purchaseOrder)"></button>
+                    <button (click)="generatePDF(purchaseOrder)" pButton pRipple icon="pi pi-print"
+                    class="p-button-rounded p-button-success"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <!-- empty table message-->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center">Aucun Bon de Commande trouvé.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+    </div>
+  </div>
+
+
+
+  <!-- --------------------------------------------BC dialog-------------------------------------------- -->
+
+  <p-dialog [(visible)]="orderDialog" [style]="{width: '50%'}" header="Bon de Commande" [modal]="true" class="p-fluid">
+    <div class="text-500 mb-2">Veuillez remplir tous les champs obligatoires marqués par un astérisque (*).</div>
+
+    <div *ngIf="editDialog">
+    <div class="surface-section px-4 py-5 md:px-2 lg:px-2">
+      <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+        <div>
+          <div class="font-medium text-xl text-800">État de Saisie</div>
+          <div class="flex align-items-center text-700 flex-wrap">
+            <div class="mr-5 flex align-items-center mt-3">
+              <i class="pi pi-money-bill mr-2"></i>
+              <span>Montant Planifié :
+                {{order?.amount}} {{market?.unit}}
+              </span>
+            </div>
+            <div class="mr-5 flex align-items-center mt-3">
+              <span> Montant des Articles Saisis : {{getTotal(order)}} {{market?.unit}}</span>
+            </div>
+            <div class="flex align-items-center mt-3">
+              <span> Montant des Articles à Saisir : {{getLeftoverItemsAmount()| number:'1.2-2'}} {{market?.unit}}</span>
+            </div>
+          </div>
+        </div>
+        <div class="mt-6 md:mt-5 ml-0 md:ml-8 flex align-items-center">
+          <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" [ngStyle]="{height: '8px'}">
+            <div class="bg-teal-500 h-full" [ngStyle]="{width: getItemsPercentage() }"></div>
+          </div>
+          <span class="text-teal-500 ml-3 font-medium">{{getItemsPercentage()}}</span>
+        </div>
+      </div>
+    </div>
+    </div>
+    <ng-template pTemplate="content">
+      <form [formGroup]="orderForm">
+        <!-- ---hidden--- -->
+        <div class="field">
+          <input type="text" hidden pInputText formControlName="id" />
+        </div>
+        <div class="field">
+          <label for="num">Numéro</label>
+          <input type="text" placeholder="Numéro BC" pInputText formControlName="num" />
+        </div>
+        <div class="grid">
+          <div class="col-6">
+            <div class="field">
+              <label for="startDate">Date de Début*</label>
+              <p-calendar appendTo="body" placeholder="jj/mm/aaaa" formControlName="startDate" inputId="startDate" dateFormat="dd/mm/yy"
+                [showIcon]="true"></p-calendar>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="field">
+              <label for="region">Région*</label>
+              <p-dropdown appendTo="body" inputId="region" [autoDisplayFirst]="false" [filter]="true" filterBy="name"
+            [showClear]="true" [options]="regions_options" placeholder="Sélectionner Région" formControlName="region" optionLabel="name"></p-dropdown>
+        </div>
+            </div>
+          </div>
+
+        <div class="grid">
+          <div class="col-6">
+            <div class="field">
+              <label for="amount">Montant Planifié*</label>
+              <p-inputNumber placeholder="Montant BC" formControlName="amount" [showButtons]="true" buttonLayout="horizontal" inputId="amount"
+                spinnerMode="horizontal" [step]="0.25" mode="currency" [currency]="market?.unit"
+                decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success"
+                incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+              </p-inputNumber>
+              <div *ngIf="budgetControl">
+                <small id="amount" class="p-error block mt-2">⚠️ Montant a depassé le montant de marché
+                  planifié.</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6">
+            <div class="field">
+              <label for="limit">Délais*</label>
+              <p-inputNumber placeholder="Délais BC en jours" inputId="limit" mode="decimal" [showButtons]="true" [min]="0" suffix=" Jours"
+                formControlName="limit">
+              </p-inputNumber>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h5>Organisation</h5>
+          <div class="p-fluid p-formgrid grid">
+            <div class="field col-12 md:col-12">
+              <p-accordion>
+                <p-accordionTab header="Selectionner une Organisation" [selected]="false"  class="line-height-3 m-0">
+                  <p-table #dt1 [value]="organizations" [scrollable]="true" scrollHeight="270px" selectionMode="single"
+                  [rows]="3" [paginator]="true" [rowsPerPageOptions]="[3,5,10]" [(selection)]="selectedOrganization">
+                    <ng-template  responsiveLayout="scroll" pTemplate="header">
+                        <tr>
+                            <th pSortableColumn="code">Code<p-sortIcon field="code"></p-sortIcon></th>
+                            <th pSortableColumn="name">Nom<p-sortIcon field="name"></p-sortIcon></th>
+                            <th pSortableColumn="sector">Secteur d'activité<p-sortIcon field="sector"></p-sortIcon></th>
+                        </tr>
+                        <tr>
+                          <th>
+                              <input pInputText type="text" (input)="dt1.filter($event.target.value, 'code', 'contains')" [value]="dt1.filters['code']?.value" placeholder="Chercher par code" class="p-column-filter">
+                          </th>
+                          <th>
+                              <input pInputText type="text" (input)="dt1.filter($event.target.value, 'name', 'contains')" [value]="dt1.filters['name']?.value" placeholder="Chercher par nom" class="p-column-filter">
+                          </th>
+                          <th>
+                              <input pInputText type="text" (input)="dt1.filter($event.target.value, 'sector.name', 'contains')" [value]="dt1.filters['sector.name']?.value" placeholder="Chercher par secteur" class="p-column-filter">
+                          </th>
+                      </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-organization>
+                        <tr [pSelectableRow]="organization">
+                            <td><i class="pi pi-building mr-4 " style="font-size: 1rem" ></i><span class="p-column-title">code</span>{{organization?.code }}</td>
+                            <td><span class="p-column-title">Nom</span>{{organization?.name}}</td>
+                            <td><span class="p-column-title">Secteur d'activité</span>{{organization?.sector?.name}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                          <td colspan="4">Aucune donnée disponible.</td>
+                      </tr>
+                  </ng-template>
+                </p-table>
+                </p-accordionTab>
+            </p-accordion>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid mt-3">
+          <div class="col-2">
+            <label class="col-12 mb-2 md:col-2 md:mb-0" for="class">Types*</label>
+          </div>
+          <div class="col-4">
+            <div *ngFor="let type of purchase_order_types" class="field-checkbox">
+              <p-radioButton [inputId]="type" name="type" [value]="type"
+                formControlName="type"></p-radioButton>
+              <label [for]="type">{{type}}</label>
+            </div>
+          </div>
+          <div class="col-6">
+            <div [hidden]="user_role != 'SUPER_ADMIN' && user_role != 'FINANCIER'">
+              <div class="grid">
+                <div class="col-4">
+                  <label class="col-12 mb-2 md:col-2 md:mb-0" for="class">Validation:</label>
+                </div>
+                <div class="col-8">
+                  <div class="flex flex-column gap-3">
+                    <div *ngFor="let status of statusArray" class="field-checkbox">
+                      <p-radioButton [inputId]="status.key" [value]="status" formControlName="validationState"></p-radioButton>
+                      <label [for]="status.key" class="ml-2">{{ status.name }}</label>
+                    </div>
+                  </div>
+                  <div class="mt-4">
+                    <span class="p-float-label">
+                      <input formControlName="motive" pInputText id="motive"/>
+                      <label htmlFor="motive">Motif de rejet</label>
+                  </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </form>
+    </ng-template>
+
+    <p-footer>
+      <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text"
+        (click)="hideOrderDialog()"></button>
+      <button pButton pRipple label="Enregistrer" icon="pi pi-check"
+        class="p-button-text" (click)="saveOrder()"></button>
+    </p-footer>
+  </p-dialog>
+
+  <!----------------------delete order-------------- -->
+  <p-dialog [(visible)]="deleteOrderDialog" header="Confirmation" [modal]="true" [style]="{width:'30%'}">
+    <div class="flex align-items-center justify-content-center">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span *ngIf="market">Supprimer <b>{{order?.code}}</b>?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Annuler"
+        (click)="deleteOrderDialog = false"></button>
+      <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Supprimer"
+        (click)="confirmDelete()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <p-dialog [(visible)]="deleteOrdersDialog" header="Confirmer" [modal]="true" [style]="{width:'30%'}">
+    <div class="flex align-items-center justify-content-center">
+      <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+      <span>Supprimer Sélection?</span>
+    </div>
+    <ng-template pTemplate="footer">
+      <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Annuler"
+        (click)="deleteOrdersDialog = false"></button>
+      <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Supprimer"
+        (click)="confirmDeleteSelected()"></button>
+    </ng-template>
+  </p-dialog>
+
+</div>
+
+<!----------------------delete item-------------- -->
+<p-dialog [(visible)]="deleteItemDialog" header="Confirmation" [modal]="true" [style]="{width:'30%'}">
+  <div class="flex align-items-center justify-content-center">
+    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+    <span *ngIf="market">Supprimer Article ?</span>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Annuler"
+      (click)="deleteOrderDialog = false"></button>
+    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Supprimer"
+      (click)="deleteItemUsed()"></button>
+  </ng-template>
+</p-dialog>
+
+<!----------------------articles dialog-------------- -->
+<p-dialog [(visible)]="articlesDialog" header="Gestion des Articles" [modal]="true" [style]="{width:'50%'}">
+  <ng-template pTemplate="content">
+    <div>
+      <p-table #dt1 [value]="order?.itemsUsed" [paginator]="true" [rows]="5" responsiveLayout="scroll" [rowHover]="true"
+      dataKey="id" editMode="row" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [showCurrentPageReport]="true" [globalFilterFields]="['itemUsed.item.name','item.quantity','item.price']">
+        <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <p-button [disabled]="isResponsable || isChefProjet" icon="pi pi-plus" styleClass="p-button-success" label="Ajouter Article"
+              (click)="openAddArticleDialog()"></p-button>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search..." />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Code</th>
+            <th pSortableColumn="name">Article <p-sortIcon field="name"></p-sortIcon>
+            </th>
+            <th pSortableColumn="quantity">Quantité <p-sortIcon field="quantity"></p-sortIcon>
+            </th>
+            <th pSortableColumn="price">Prix <p-sortIcon field="price"></p-sortIcon>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-usedItem let-editing="editing" let-ri="rowIndex">
+          <tr [pEditableRow]="usedItem">
+            <td style="width: 5%; min-width: 5rem;">
+              {{usedItem?.item?.code}}
+            </td>
+            <td style="width: 30%; min-width: 7rem;">
+              {{usedItem?.item?.name}}
+            </td>
+            <td style="width: 30%; min-width: 7rem;">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                    <p-inputNumber [(ngModel)]="usedItem.quantity" inputId="quantity" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" placeholder="Quantité" required> </p-inputNumber>
+                </ng-template>
+                <ng-template pTemplate="output">
+                    {{usedItem?.quantity}}
+                </ng-template>
+            </p-cellEditor>
+            </td>
+            <td style="width: 15%; min-width: 8rem;">
+              <p-cellEditor>
+                <ng-template pTemplate="input">
+                    <p-inputNumber [(ngModel)]="usedItem.price" inputId="quantity" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" placeholder="PU" required> </p-inputNumber>
+                </ng-template>
+                <ng-template pTemplate="output">
+                  {{usedItem?.price}} {{market?.unit}}
+                </ng-template>
+            </p-cellEditor>
+            </td>
+            <td style="width: 20%;">
+
+              <div class="flex align-items-center justify-content-center gap-2">
+                <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(usedItem)" class="p-button-rounded p-button-text"></button>
+                <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(usedItem)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(usedItem, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                <button *ngIf="!editing" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                (click)="openDeleteItemDialog(usedItem)"></button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="footer">
+        <tr>
+            <td colspan="4" class="text-right">Total articles:</td>
+            <td>{{ getTotal(order) }} {{ market?.unit }}</td>
+        </tr>
+    </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+            <td colspan="5">Aucun article trouvé.</td>
+        </tr>
+      </ng-template>
+      </p-table>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple (click)="articlesDialog = false" icon="pi pi-check" class="p-button-text"
+      label="Fermer"></button>
+  </ng-template>
+</p-dialog>
+
+
+<!---------------------- *************add article dialog***********-------------- -->
+<p-dialog [(visible)]="AddArticlesDialog" header="Sélectionner Articles" [modal]="true" [style]="{width:'70%'}">
+  <ng-template pTemplate="content">
+    <div>
+      <div class="grid ">
+        <div class="col-12">
+          <p-dataView #dv [value]="items" [paginator]="true" [rows]="4" filterBy="name,code" [sortField]="sortField"
+            [sortOrder]="sortOrder" layout="list">
+            <ng-template pTemplate="header">
+              <div class="flex flex-column md:flex-row md:justify-content-between">
+                <span class="p-input-icon-left mb-2 md:mb-0">
+                  <i class="pi pi-search"></i>
+                  <input type="search" pInputText placeholder="Rechercher" (input)="dv.filter($event.target.value)">
+                </span>
+              </div>
+            </ng-template>
+            <ng-template let-item pTemplate="listItem">
+              <div class="col-12">
+                <div class="product-list-item">
+                  <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image">
+                  <div class="product-list-detail">
+                    <div class="product-name">{{item?.name}}</div>
+                    <div class="product-description">{{item?.code}}</div>
+                    <div class="product-description"><i
+                        class="pi pi-th-large product-category-icon"></i>{{item?.item_class}}</div>
+
+                    <i class="pi pi-tag product-category-icon"></i><span
+                      class="product-category">{{item?.type?.name}}</span>
+                  </div>
+                  <div class="product-list-action">
+                    <p-button icon="pi pi-plus" styleClass="p-button-success" label="Ajouter"
+                      (click)="op.toggle($event)"></p-button>
+                  </div>
+                </div>
+              </div>
+              <p-overlayPanel #op [showCloseIcon]="true" [dismissable]="true" [style]="{width: '35%'}"
+                (onShow)="openOverlayPanel()">
+                <ng-template pTemplate>
+                  <form [formGroup]="usedItemForm">
+                    <div class="formgroup-inline">
+                      <div class="field">
+                        <p-inputNumber formControlName="quantity" inputId="limit" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" placeholder="Quantité" [showButtons]="true" required> </p-inputNumber>
+
+                      </div>
+                      <div class="field">
+                        <div>
+                          <p-inputNumber formControlName="price" [min]="0" [showButtons]="true" placeholder="PU" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="0.25"
+                        decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
+                        mode="currency" [currency]="market?.unit" required></p-inputNumber>
+                        </div>
+                      </div>
+                      <button pButton pRipple type="button" icon="pi pi-check" label="OK" class="p-button-primary mt-1"
+                         (click)="submitUsedItem(item)"></button>
+                    </div>
+                  </form>
+                </ng-template>
+              </p-overlayPanel>
+            </ng-template>
+
+          </p-dataView>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple (click)="AddArticlesDialog = false" icon="pi pi-check" class="p-button-text"
+      label="Fermer"></button>
+  </ng-template>
+</p-dialog>
+
+<!----------------------Update details dialog-------------- -->
+<p-dialog [(visible)]="marketDialog" [style]="{width: '55%'}" header="Modifier Détails Marché" [modal]="true"
+  class="p-fluid">
+  <div class="text-500 mb-5">Veuillez remplir tous les champs obligatoires marqués par un astérisque (*).</div>
+  <ng-template pTemplate="content">
+    <form [formGroup]="detailsForm">
+      <!-- ---hidden--- -->
+      <div class="field">
+        <input type="text" hidden pInputText id="code" formControlName="id" />
+      </div>
+
+      <div class="grid">
+        <div class="col-6">
+          <label for="sector">Secteur d'Activité*</label>
+          <p-dropdown appendTo="body" inputId="sector" [autoDisplayFirst]="false" (onChange)="onSectorSelect()"
+            [filter]="true" filterBy="name" [showClear]="true" [options]="sectors" formControlName="selectedSector"
+            optionLabel="name"></p-dropdown>
+        </div>
+        <div class="col-6">
+          <label for="profession">Métier*</label>
+          <p-dropdown appendTo="body" inputId="profession" [autoDisplayFirst]="false" [filter]="true" filterBy="name"
+            [showClear]="true" [options]="professions" formControlName="profession" optionLabel="name"></p-dropdown>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="name">Nom*</label>
+        <input type="text" id="name" pInputText formControlName="name" required>
+        <div *ngIf="(detailsForm.get('name').invalid && detailsForm.get('name').dirty)">
+          <small class="ng-dirty ng-invalid" *ngIf="detailsForm.get('name').hasError('required')">
+            Nom est obligatoire.
+          </small>
+          <small class="ng-dirty ng-invalid" *ngIf="detailsForm.get('name').hasError('pattern')">
+            Nom invalide.
+          </small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="code">Code</label>
+        <input type="text" id="code" pInputText formControlName="code" required>
+        <div *ngIf="(detailsForm.get('code').invalid && detailsForm.get('code').dirty)">
+          <small class="ng-dirty ng-invalid" *ngIf="detailsForm.get('code').hasError('required')">
+            Code est obligatoire.
+          </small>
+          <small class="ng-dirty ng-invalid" *ngIf="detailsForm.get('code').hasError('pattern')">
+            Code invalide.
+          </small>
+        </div>
+      </div>
+
+      <div class="grid mt-3">
+        <div class="col-2">
+          <label class="col-12 mb-2 md:col-2 md:mb-0" for="class">Budget*</label>
+        </div>
+        <div class="col-4">
+          <div *ngFor="let budget of budget_options" class="field-checkbox">
+            <p-radioButton [inputId]="budget" name="budget" [value]="budget" formControlName="budget"></p-radioButton>
+            <label [for]="budget">{{budget}}</label>
+          </div>
+        </div>
+        <div class="col-2">
+          <label class="col-12 mb-2 md:col-2 md:mb-0" for="class">Type*</label>
+        </div>
+        <div class="col-4">
+          <div *ngFor="let type of type_options" class="field-checkbox">
+            <p-radioButton [inputId]="type" name="type" [value]="type" formControlName="type"></p-radioButton>
+            <label [for]="type">{{type}}</label>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <label for="currency">Devise</label>
+        <p-dropdown (onChange)="onChangerCurrency()" [options]="currency_options" placeholder="Choisir un Devise"
+          [showClear]="true" appendTo="body" formControlName="unit">
+
+        </p-dropdown>
+      </div>
+      <div class="grid">
+        <div class="col-6">
+          <label for="horizontal">Montant</label>
+          <div class="mt-2">
+            <p-inputNumber formControlName="amount" [showButtons]="true" buttonLayout="horizontal" inputId="amount"
+              spinnerMode="horizontal" [step]="0.25" mode="currency" [currency]="selectedUnit"
+              decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success"
+              incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+            </p-inputNumber>
+          </div>
+        </div>
+        <div class="col-6">
+          <label for="horizontal">Délais</label>
+          <div class="mt-2">
+
+            <p-inputNumber inputId="limit" mode="decimal" [showButtons]="true" [min]="0" suffix=" Jours"
+              formControlName="limit">
+            </p-inputNumber>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </ng-template>
+
+  <p-footer>
+    <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text"
+      (click)="hideMarketDialog()"></button>
+    <button pButton pRipple label="Enregistrer" [disabled]="detailsForm.invalid" icon="pi pi-check"
+      class="p-button-text" (click)="editMarket()"></button>
+  </p-footer>
+</p-dialog>

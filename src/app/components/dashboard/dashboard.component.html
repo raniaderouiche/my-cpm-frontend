@@ -1,0 +1,49 @@
+<div>
+  <div class="grid">
+    <div class="col-4">
+      <div class="card">
+        <div>
+          <p-chart type="pie" [data]="prof_sector_data" [options]="chartOptions"  [style]="{'width': '40%'}"></p-chart>
+          <div class="text-center mt-4"><h5>Nombre des métiers par secteur</h5></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="card">
+        <h5>Nombre d'utilisateurs par organisation</h5>
+        <p-chart type="bar" [data]="users_orgs_data" [options]="basicOptions"></p-chart>
+    </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <h5>Nombre des marchés par organisation</h5>
+        <p-chart type="bar" [data]="market_orgs_data" [options]="basicOptions"></p-chart>
+    </div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="grid">
+    <div class="col-8">
+      <div>
+        <div class="card">
+          <h5>Nombre de marchés par metier</h5>
+          <p-chart type="bar" [data]="market_profession_data" [options]="basicOptions"></p-chart>
+      </div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="card">
+      <p-chart type="doughnut" [data]="markets_type_data" [options]="chartOptions" [style]="{'width': '40%'}"></p-chart>
+      <div class="text-center mt-4"><h5>Nombre des marchés par type</h5></div>
+    </div>
+    </div>
+    <div class="col-12">
+      <div class="card">
+        <h5>Montant des marchés</h5>
+        <p-chart type="bar" [data]="amount_by_market_data" [options]="basicOptions"></p-chart>
+    </div>
+    </div>
+  </div>
+</div>

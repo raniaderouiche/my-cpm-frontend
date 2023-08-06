@@ -1,0 +1,533 @@
+<p-toast></p-toast>
+<div>
+  <div class="card mb-4">
+    <ul class="list-none p-0 m-0 flex align-items-center font-medium mb-3">
+      <li>
+        <a class="text-500 no-underline line-height-3 cursor-pointer">MyCPM</a>
+      </li>
+      <li class="px-2">
+        <i class="pi pi-angle-right text-500 line-height-3"></i>
+      </li>
+      <li>
+        <span class="text-900 line-height-3">Bons de Livraison</span>
+      </li>
+    </ul>
+    <div class="flex align-items-start flex-column lg:justify-content-between lg:flex-row">
+      <div *ngIf="isMP">
+        <div class="font-medium text-3xl text-900">Bon de Commande : {{purchaseOrder?.code}}</div>
+        <div class="flex align-items-center text-700 flex-wrap">
+          <div class="mr-5 flex align-items-center mt-3">
+            <i class="pi pi-calendar mr-2"></i>
+            <span>Date Debut Travaux : {{purchaseOrder?.startDate | date:'dd/LL/yyyy'}}</span>
+          </div>
+          <div class="mr-5 flex align-items-center mt-3">
+            <i class="pi pi-money-bill mr-2"></i>
+            <span>Montant : {{purchaseOrder?.amount + " " }} {{market?.unit}}</span>
+          </div>
+          <div class="flex align-items-center mt-3">
+            <i class="pi pi-send mr-2"></i>
+            <span>Délais : {{purchaseOrder?.limit}} Jours</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!isMP">
+        <div class="font-medium text-3xl text-900">Ordre de Travail : {{workOrder?.code}}</div>
+        <div class="flex align-items-center text-700 flex-wrap">
+          <div class="mr-5 flex align-items-center mt-3">
+            <i class="pi pi-calendar mr-2"></i>
+            <span>Date Debut Travaux : {{workOrder?.startDate | date:'dd/LL/yyyy'}}</span>
+          </div>
+          <div class="mr-5 flex align-items-center mt-3">
+            <i class="pi pi-money-bill mr-2"></i>
+            <span>Montant : {{workOrder?.amount + " " }} {{market?.unit}}</span>
+          </div>
+          <div class="flex align-items-center mt-3">
+            <i class="pi pi-send mr-2"></i>
+            <span>Délais : {{workOrder?.limit}} Jours</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ------------------------------------------------ -->
+
+<div class="card">
+  <div>
+    <p-tabView>
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <i class="pi pi-sitemap mr-1"></i>
+          <span>Bons de Livraison</span>
+          <!-- <p-badge class="ml-2" [value]="deliveries?.length"></p-badge> -->
+        </ng-template>
+        <p-toolbar styleClass="mt-1">
+          <ng-template pTemplate="left">
+            <div>
+              <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2"
+                (click)=" openDeliveryDialog()"></button>
+              <button pButton pRipple label="Supprimer" icon="pi pi-trash" class="p-button-danger"
+                (click)="deleteSelectedDeliveries()"
+                [disabled]="!selectedDeliveries|| !selectedDeliveries?.length"></button>
+            </div>
+          </ng-template>
+        </p-toolbar>
+        <p-table #dt [value]="deliveries" responsiveLayout="scroll" [globalFilterFields]="['code']" [rows]="10" [paginator]="true" [rowsPerPageOptions]="[10,20,30]"
+        [showCurrentPageReport]="true" currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées"
+          [(selection)]="selectedDeliveries" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <h5 class="m-0">Gestion des Bons de Livraison</h5>
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <i class="pi pi-search"></i>
+                <input pInputText Item="text" (input)="dt.filterGlobal($event.target.value, 'contains')"
+                  placeholder="Recherche..." />
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th style="width: 3rem">
+                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="code">
+                <div class="flex justify-content-center">Code<p-sortIcon field="code"></p-sortIcon>
+                </div>
+              <th pSortableColumn="creationDate">
+                <div class="flex justify-content-center">Date de Creation<p-sortIcon field="creationDate">
+                  </p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="deliveryDate">
+                <div class="flex justify-content-center">Date de Livraison<p-sortIcon field="deliveryDate">
+                  </p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="amount">
+                <div class="flex justify-content-center">Montant<p-sortIcon field="amount"></p-sortIcon>
+                </div>
+              </th>
+              <th pSortableColumn="itemsDelivered">
+
+              </th>
+              <th></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-delivery>
+            <tr>
+            <tr>
+              <td style="width:5%; min-width:3rem;">
+                <p-tableCheckbox [value]="delivery"></p-tableCheckbox>
+              </td>
+              <td style="width:10%; min-width:10rem;">
+                <span class="p-column-title">code</span>
+                <div>
+                  <div class="flex justify-content-center text-center">{{delivery?.code}}</div>
+                </div>
+
+              </td>
+              <td style="width:30%; min-width:10rem;">
+                <span class="p-column-title">creationDate</span>
+                <div class="flex justify-content-center text-center">
+                  <div class="flex justify-content-center text-center">{{delivery?.creationDate | date: 'dd/MM/yyyy'}}
+                  </div>
+                </div>
+              </td>
+              <td style="width:30%; min-width:10rem;">
+                <span class="p-column-title">deliveryDate</span>
+                <div class="flex justify-content-center text-center">
+                  <div class="flex justify-content-center text-center">{{delivery?.deliveryDate | date: 'dd/MM/yyyy'}}
+                  </div>
+                </div>
+              </td>
+              <td style="width:30%; min-width:10rem;">
+                <span class="p-column-title">amount</span>
+                <div class="flex justify-content-center text-center">
+                  <div class="flex justify-content-center text-center">{{delivery?.amount}}
+                  </div>
+                </div>
+              </td>
+              <td style="width:30%; min-width:10rem;">
+                <span class="p-column-title">Article</span>
+                <div class="flex justify-content-center text-center">
+                  <button (click)="openItems(delivery)" pButton pRipple type="button" label="Articles"
+                    icon="pi pi-shopping-cart" class="p-button-raised p-button-text p-button-plain"></button>
+                </div>
+
+              </td>
+              <td style="width:20%; min-width:10rem;">
+                <div class="flex justify-content-center text-center">
+                  <button (click)="generatePDF(delivery)" pButton pRipple icon="pi pi-print" class="p-button-rounded p-button-success mr-2"></button>
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
+                    (click)="editDelivery(delivery)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                    (click)="deleteDelivery(delivery)"></button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+          <!-- empty table message-->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center">Aucun bon de livraison trouvé.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabPanel>
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <i class="pi pi-clone mr-1"></i>
+          <span>Articles</span>
+          <!-- <p-badge class="ml-2" [value]="purchaseOrder?.itemsUsed?.length"></p-badge> -->
+        </ng-template>
+
+        <div class="card">
+          <p-dataView #dv [value]="purchaseOrder?.itemsUsed" [paginator]="true" [rows]="9" filterBy="item.name" layout="grid">
+            <ng-template pTemplate="header">
+              <div class="flex flex-column md:flex-row md:justify-content-between">
+                <span class="p-input-icon-left mb-2 md:mb-0">
+                  <i class="pi pi-search"></i>
+                  <input type="search" pInputText placeholder="Search by Name" (input)="dv.filter($event.target.value)">
+                </span>
+                <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+              </div>
+            </ng-template>
+            <ng-template let-usedItem pTemplate="listItem">
+              <div class="col-12">
+                <div class="product-list-item">
+                  <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image">
+                  <div class="product-list-detail">
+                    <div class="product-name">{{usedItem?.item?.name}}</div>
+                    <div class="product-description">{{usedItem?.item?.code}}</div>
+                    <div class="product-description">Quantité : {{usedItem?.quantity}}</div>
+                    <i class="pi pi-tag product-category-icon"></i><span
+                      class="product-category">{{usedItem?.item?.item_class}}</span>
+                  </div>
+                  <div class="product-list-action">
+
+                    <span class="product-price">{{usedItem?.price}} {{market?.unit}}</span>
+                    <p-button icon="pi pi-external-link" (click)="goToMarket()" label="Edit"></p-button>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+            <ng-template let-usedItem pTemplate="gridItem">
+              <div class="col-12 md:col-4">
+                <div class="product-grid-item card">
+                  <div class="product-grid-item-top">
+                    <div>
+                      <i class="pi pi-tag product-category-icon"></i>
+                      <span class="product-category">{{usedItem?.item?.item_class}}</span>
+                    </div>
+                    <p-chip [label]="usedItem?.quantity"></p-chip>
+                  </div>
+                  <div class="product-grid-item-content">
+                    <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image">
+                    <div class="product-name">{{usedItem?.item?.name}}</div>
+                    <div class="product-description">{{usedItem?.item?.code}}</div>
+                  </div>
+                  <div class="product-grid-item-bottom">
+                    <span class="product-price">{{usedItem?.price}} {{market?.unit}}</span>
+                    <p-button icon="pi pi-external-link" (click)="goToMarket()"></p-button>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </p-dataView>
+        </div>
+
+      </p-tabPanel>
+      <p-tabPanel>
+        <ng-template pTemplate="header">
+          <i class="pi pi-chart-bar mr-1"></i>
+          <span>Suivi par Article</span>
+        </ng-template>
+        <div>
+          <p-table #stats [value]="items_dictionary| keyvalue" responsiveLayout="scroll" [rows]="10" [scrollable]="true" scrollHeight="400px"
+          [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          <ng-template pTemplate="caption">
+            <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+              <!-- <h5 class="m-0">Articles</h5> -->
+              <button type="button" label="Export" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
+
+              <span class="block mt-2 md:mt-0 p-input-icon-left">
+                <div class="mt-6 md:mt-5 ml-0 md:ml-8 flex align-items-center">
+                  <div class="surface-300 border-round overflow-hidden w-10rem lg:w-6rem" [ngStyle]="{height: '8px'}">
+                    <div class="bg-teal-500 h-full" [ngStyle]="{width: progressBar() }"></div>
+                  </div>
+                  <span class="text-teal-500 ml-3 font-medium">{{progressBar()}}</span>
+                </div>
+              </span>
+            </div>
+          </ng-template>
+          <ng-template pTemplate="header">
+            <tr>
+              <th pFrozenColumn>
+                <div class="flex justify-content-center" style="min-width:150px">Code<p-sortIcon field="code"></p-sortIcon>
+                </div>
+              </th>
+              <th pFrozenColumn>
+                <div class="flex justify-content-center" style="min-width:150px">Nom<p-sortIcon field="name"></p-sortIcon>
+                </div>
+              </th>
+              <th *ngFor="let ot of deliveries;let indexOfelement=index;">
+                  <div class="flex justify-content-center" style="min-width:150px">BL {{indexOfelement + 1}}</div>
+              </th>
+              <th><div class="flex justify-content-center" style="min-width:150px">Total</div></th>
+              <th><div class="flex justify-content-center" style="min-width:150px">Total BC</div></th>
+              <th pFrozenColumn><div class="flex justify-content-center" style="min-width:150px">Pourcentage</div></th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-item>
+            <tr>
+              <ng-container *ngFor="let option of item.value| keyvalue" >
+
+                <td pFrozenColumn [frozen]="option.key == 'A_code' || option.key == 'B_name'"><div class="flex justify-content-center text-center" style="min-width:150px" >
+                  {{option.value}}
+                </div></td>
+               </ng-container>
+
+            </tr>
+          </ng-template>
+          <!-- empty table message-->
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="6" class="text-center">Aucun Bon de Livraison trouvé.</td>
+            </tr>
+          </ng-template>
+        </p-table>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>
+
+
+<!----------------------add delivery dialog-------------- -->
+
+<p-dialog [(visible)]="deliveryDialog" [style]="{width: '40%'}" header="Enregistrer Bon de Livraison" [modal]="true"
+  class="p-fluid">
+  <div class="text-500 mb-5">Veuillez remplir tous les champs obligatoires marqués par un astérisque (*).</div>
+  <ng-template pTemplate="content">
+    <form [formGroup]="deliveryForm">
+      <!-- ---hidden--- -->
+      <div class="field">
+        <input Item="text" hidden pInputText id="code" formControlName="id" />
+      </div>
+      <!-- ---code--- -->
+      <div class="field">
+        <label for="title">Code *</label>
+        <input Item="text" pInputText id="code" formControlName="code" placeholder="Code Bon de Livraison" required />
+        <div *ngIf="(deliveryForm.get('code').invalid && deliveryForm.get('code').dirty)">
+          <small class="ng-dirty ng-invalid" *ngIf="deliveryForm.get('code').hasError('required')">
+            Code est obligatoire.
+          </small>
+        </div>
+      </div>
+      <div class="field">
+        <label for="creationDate">Date de Création*</label>
+        <p-calendar id="creationDate" appendTo="body" [showIcon]="true" dateFormat="dd/mm/yy" [showButtonBar]="true"
+          placeholder="jj/MM/aaaa" formControlName="creationDate"></p-calendar>
+        <div *ngIf="(deliveryForm.get('creationDate').invalid && deliveryForm.get('creationDate').dirty)">
+          <small class="ng-dirty ng-invalid" *ngIf="deliveryForm.get('creationDate').hasError('date')">Date de Création est
+            obligatoire.</small>
+        </div>
+      </div>
+      <div class="field">
+        <label for="creationDate">Date de Livraison*</label>
+        <p-calendar id="deliveryDate" appendTo="body" [showIcon]="true" dateFormat="dd/mm/yy" [showButtonBar]="true"
+          placeholder="jj/MM/aaaa" formControlName="deliveryDate"></p-calendar>
+        <div *ngIf="(deliveryForm.get('deliveryDate').invalid && deliveryForm.get('deliveryDate').dirty)">
+          <small class="ng-dirty ng-invalid" *ngIf="deliveryForm.get('deliveryDate').hasError('date')">Date de Livraison est
+            obligatoire.</small>
+        </div>
+      </div>
+    </form>
+  </ng-template>
+  <p-footer>
+    <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text"
+      (click)="deliveryDialog = false"></button>
+    <button pButton pRipple label="Enregistrer" [disabled]="deliveryForm.invalid" icon="pi pi-check"
+      class="p-button-text" (click)="saveDelivery()"></button>
+  </p-footer>
+</p-dialog>
+
+<!-- ---------------------------items dialog--------------------------- -->
+
+<p-dialog [(visible)]="itemsDialog" header="Gestion des Articles" [modal]="true" [style]="{width:'40%'}">
+  <ng-template pTemplate="content">
+    <div>
+      <p-table #dt1 [value]="itemsDelivered" [paginator]="true" [rows]="5" responsiveLayout="scroll" [rowHover]="true"
+        dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+        [showCurrentPageReport]="true" [globalFilterFields]="['item.name']">
+        <ng-template pTemplate="caption">
+          <div class="flex align-items-center justify-content-between">
+            <p-button icon="pi pi-plus" styleClass="p-button-success" label="Ajouter Article"
+              (click)="openAddItemsDialog()"></p-button>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')"
+                placeholder="Search..." />
+            </span>
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th></th>
+            <th pSortableColumn="name"><div class="flex justify-content-center">Article <p-sortIcon field="name"></p-sortIcon></div>
+            </th>
+            <th pSortableColumn="quantity"><div class="flex justify-content-center">Quantité<p-sortIcon field="quantity"></p-sortIcon></div>
+            </th>
+            <th pSortableColumn="quantity"><div class="flex justify-content-center">Prix<p-sortIcon field="quantity"></p-sortIcon></div>
+            </th>
+            <th></th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-itemDelivered>
+          <tr>
+            <td style="width: 5%; min-width: 5rem;">
+              <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image" width="30">
+            </td>
+            <td style="width: 30%; min-width: 7rem;"><div class="flex justify-content-center">{{itemDelivered?.item?.name}}</div></td>
+            <td style="width: 20%; min-width: 7rem;"><div class="flex justify-content-center">{{itemDelivered?.quantity}}</div></td>
+            <td style="width: 20%; min-width: 7rem;"><div class="flex justify-content-center">{{itemDelivered?.price}}</div></td>
+            <td style="width: 25%;">
+              <div class="flex justify-content-end flex-wrap">
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                  (click)="deleteItemDeliveredOrder(itemDelivered)"></button>
+              </div>
+
+            </td>
+          </tr>
+        </ng-template>
+        <!-- empty table message-->
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="6" class="text-center">Aucun article trouvé.</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple (click)="itemsDialog = false" icon="pi pi-check" class="p-button-text"
+      label="Fermer"></button>
+  </ng-template>
+</p-dialog>
+
+
+<!---------------------- *************add item dialog***********-------------- -->
+<p-dialog [(visible)]="addItemsDialog" header="Sélectionner Articles" [modal]="true" [style]="{width:'70%'}">
+  <ng-template pTemplate="content">
+    <div>
+      <div class="grid ">
+        <div class="col-12">
+          <p-dataView #dv [value]="items" [paginator]="true" [rows]="9" filterBy="name,code" [sortField]="sortField"
+            [sortOrder]="sortOrder" layout="list">
+            <ng-template pTemplate="header">
+              <div class="flex flex-column md:flex-row md:justify-content-between">
+                <span class="p-input-icon-left mb-2 md:mb-0">
+                  <i class="pi pi-search"></i>
+                  <input type="search" pInputText placeholder="Rechercher" (input)="dv.filter($event.target.value)">
+                </span>
+              </div>
+            </ng-template>
+            <ng-template let-item pTemplate="listItem">
+              <div class="col-12">
+                <div class="product-list-item">
+                  <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image">
+                  <div class="product-list-detail">
+                    <div class="product-name">{{item?.name}}</div>
+                    <div class="product-description">{{item?.code}}</div>
+                    <div class="product-description"><i
+                        class="pi pi-th-large product-category-icon"></i>{{item?.item_class}}</div>
+
+                    <i class="pi pi-tag product-category-icon"></i><span
+                      class="product-category">{{item?.type?.name}}</span>
+                  </div>
+                  <div class="product-list-action">
+                    <p-button icon="pi pi-plus" styleClass="p-button-success" label="Ajouter"
+                      (click)="opanel.toggle($event)"></p-button>
+                  </div>
+                </div>
+              </div>
+              <p-overlayPanel #opanel [showCloseIcon]="true" [dismissable]="true" [style]="{width: '30%'}">
+                <ng-template pTemplate>
+                  <form [formGroup]="itemDeliveredForm">
+                    <div class="formgroup-inline">
+                      <div class="field">
+                        <p-inputNumber formControlName="quantity" inputId="limit" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" placeholder="Quantité" [showButtons]="true"> </p-inputNumber>
+                      </div>
+                      <div class="field">
+                        <div>
+                          <p-inputNumber formControlName="price" [min]="0" [showButtons]="true" placeholder="PU" buttonLayout="horizontal" inputId="horizontal" spinnerMode="horizontal" [step]="0.25"
+                        decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success" incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus"
+                        mode="currency" [currency]="market?.unit"></p-inputNumber>
+                        </div>
+                      </div>
+                      <button pButton pRipple type="button" icon="pi pi-check" label="OK"
+                        class="p-button-primary mt-1" [disabled]="itemDeliveredForm?.invalid"
+                        (click)="submitItem(item)"></button>
+                    </div>
+                  </form>
+                </ng-template>
+              </p-overlayPanel>
+            </ng-template>
+
+          </p-dataView>
+        </div>
+
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple (click)="addItemsDialog = false" icon="pi pi-check" class="p-button-text"
+      label="Fermer"></button>
+  </ng-template>
+</p-dialog>
+
+<!-- ---------------------------delete dialogs--------------------------- -->
+
+<p-dialog [(visible)]="deleteDeliveryDialog" header="Confirmer" [modal]="true" [style]="{width:'30%'}">
+  <div class="flex align-items-center justify-content-center">
+    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+    <span *ngIf="delivery">Supprimer Bon de Livraison ?</span>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Annuler"
+      (click)="deleteDeliveryDialog = false"></button>
+    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Supprimer" (click)="confirmDelete()"></button>
+  </ng-template>
+</p-dialog>
+
+<p-dialog [(visible)]="deleteDeliveriesDialog" header="Confirmer" [modal]="true" [style]="{width:'30%'}">
+  <div class="flex align-items-center justify-content-center">
+    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+    <span>Supprimer Sélection?</span>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Annuler"
+      (click)="deleteDeliveriesDialog = false"></button>
+    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Supprimer"
+      (click)="confirmDeleteSelected()"></button>
+  </ng-template>
+</p-dialog>
+
+
+<p-dialog [(visible)]="deleteItemDialog" header="Confirmer" [modal]="true" [style]="{width:'40%'}">
+  <div class="flex align-items-center justify-content-center">
+    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+    <span *ngIf="itemDlvrd">Supprimer Article ?</span>
+  </div>
+  <ng-template pTemplate="footer">
+    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="Non"
+      (click)="deleteItemDialog = false"></button>
+    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Oui"
+      (click)="deleteItemDelivered()"></button>
+  </ng-template>
+</p-dialog>
