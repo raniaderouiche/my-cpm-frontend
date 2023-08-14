@@ -54,7 +54,7 @@ export class WorkOrderManageComponent implements OnInit {
     this.marketService.getMarketsByType('MC').subscribe({
       next: (response: Market[]) => {
         this.markets = response
-        this.markets = this.markets.filter(m => m.purchaseOrders = m.purchaseOrders.filter(order => order.rejectionMotive == "Valide"))
+        this.markets = this.markets.filter(m => m.purchaseOrders = m.purchaseOrders.filter(order => order.validationState == "Valide"))
       },
       error: (e) => this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Chargement échoué', life: 3000 }),
     })

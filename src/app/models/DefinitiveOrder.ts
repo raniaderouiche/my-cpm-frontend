@@ -7,7 +7,7 @@ export interface DefinitiveOrder{
 
     quantity? : number;
 
-    workOrder? : WorkOrder;
+    //workOrder? : WorkOrder;
     item? : Item;
 
     price?:number;

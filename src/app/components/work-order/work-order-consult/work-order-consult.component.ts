@@ -17,6 +17,8 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import * as FileSaver from 'file-saver';
 import { logo } from 'src/assets/data/LogoPlaceholder';
+import { concat, of } from 'rxjs';
+import { catchError, tap, toArray } from 'rxjs/operators';
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 interface Column {
@@ -67,6 +69,8 @@ export class WorkOrderConsultComponent implements OnInit {
 
   exportColumns!: ExportColumn[];
 
+  editWorkOrderDialog: boolean = false
+
   constructor(private route : ActivatedRoute,
     private messageService: MessageService,
     private marketService: MarketService,
@@ -79,9 +83,7 @@ export class WorkOrderConsultComponent implements OnInit {
     this.route.params.subscribe(params => {
       this.pathId = params['id'];
     });
-    this.getPurchaseOrderByID()
-    this.getWorkOrdersByPurchaseOrder()
-    this.getMarketByPurchaseOrderID()
+    this.executeSequence()
 
     //this.marketService.marketUnit.subscribe(m => this.market = m)
 
@@ -97,7 +99,9 @@ export class WorkOrderConsultComponent implements OnInit {
 
     this.workOrderForm = new FormGroup({
       id: new FormControl(''),
+      code: new FormControl('', [Validators.required]),
       startDate: new FormControl('',[Validators.required]),
+      amount: new FormControl('', [Validators.required]),
       limit: new FormControl('', [Validators.required]),
     })
 
@@ -106,6 +110,65 @@ export class WorkOrderConsultComponent implements OnInit {
     })
   }
 
+  executeSequence() {
+    // Create the sequence
+    const sequence$ = concat(
+    this.getPurchaseOrderByID_Sequence(),
+    this.getWorkOrdersByPurchaseOrder_Sequence(),
+    this.getMarketByPurchaseOrderID_Sequence()
+    );
+
+    sequence$.pipe(
+    tap((data) => {
+      // Use console.log to check if data is emitted by each method
+      //console.log(data);
+    }),
+    toArray()
+  )
+  .subscribe((data: any) => {
+    // The 'data' variable will be an array containing all emitted values
+    console.log('All methods executed successfully.');
+
+    this.order = data[0]
+    this.workOrders = data[1]
+    this.market = data[2];
+    this.marketUnit = this.market.unit
+    this.matchItem()
+  });
+  }
+
+  getPurchaseOrderByID_Sequence(){
+    return this.purchaseOrderService.getPurchaseOrderById(this.pathId).pipe(
+      catchError((error) => {
+        console.error('Error in getOrderByID:', error);
+        // Handle the error or re-throw if needed
+        return of(null);
+      })
+    );
+  }
+
+  getMarketByPurchaseOrderID_Sequence(){
+    return this.marketService.getMarketByPurchaseOrderId(this.pathId).pipe(
+      catchError((error) => {
+        console.error('Error in getMarketByPurchaseOrderID:', error);
+        // Handle the error or re-throw if needed
+        return of(null);
+      })
+    );
+  }
+
+  getWorkOrdersByPurchaseOrder_Sequence(){
+    return this.workOrderService.getWorkOrdersByPurchaseOrder(this.pathId).pipe(
+      catchError((error) => {
+        console.error('Error in getWorkOrdersByPurchaseOrder:', error);
+        // Handle the error or re-throw if needed
+        return of(null);
+      })
+    );
+  }
+
+
+  // --------------------------------------------------------
   getPurchaseOrderByID(){
     this.purchaseOrderService.getPurchaseOrderById(this.pathId).subscribe({
       next: (response: PurchaseOrder) => {
@@ -121,7 +184,6 @@ export class WorkOrderConsultComponent implements OnInit {
     this.marketService.getMarketByPurchaseOrderId(this.pathId).subscribe({
       next:(response: Market) => {
         this.market = response;
-        console.log(this.market)
         this.marketUnit = this.market.unit
       },
       error:(e)=>this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Chargement échoué', life: 3000 })
@@ -142,6 +204,7 @@ export class WorkOrderConsultComponent implements OnInit {
     this.definitiveOrderService.getDefinitiveOrdersByWorkOrderID(id).subscribe({
       next: (response: WorkOrder[]) => {
         this.defOrders = response
+        this.setPrices()
       },
       error: (e) => this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Chargement échoué', life: 3000 }),
     })
@@ -150,12 +213,13 @@ export class WorkOrderConsultComponent implements OnInit {
   editWorkOrder(workOrder: WorkOrder) {
     this.workOrderForm.reset()
     this.workOrder = { ...workOrder };
-    this.workOrderForm.get('id').setValue(workOrder.id)
+    console.log(this.workOrder.definitiveOrders)
+    this.workOrderForm.get('id').setValue(this.workOrder)
     this.workOrderForm.get('code').setValue(workOrder.code)
     this.workOrderForm.get('startDate').setValue(new Date(workOrder.startDate))
     this.workOrderForm.get('limit').setValue(workOrder.limit)
     this.workOrderForm.get('amount').setValue(workOrder.amount)
-    this.workOrderDialog = true;
+    this.editWorkOrderDialog = true;
   }
 
   openWorkOrderDialog() {
@@ -186,6 +250,7 @@ export class WorkOrderConsultComponent implements OnInit {
   openItems(workOrder: WorkOrder){
     this.workOrder = { ...workOrder };
     this.defOrders = this.workOrder?.definitiveOrders
+    this.setPrices()
     this.itemsDialog = true;
   }
 
@@ -198,7 +263,8 @@ export class WorkOrderConsultComponent implements OnInit {
       'id': this.workOrderForm.get('id').value,
       'startDate': this.workOrderForm.get('startDate').value,
       'limit': this.workOrderForm.get('limit').value,
-      'amount': 0,
+      'code':this.workOrderForm.get('code').value,
+      'amount': this.workOrderForm.get('amount').value,
     }
 
     this.workOrderService.saveWorkOrder(this.workOrder, this.order.id).subscribe({
@@ -212,6 +278,31 @@ export class WorkOrderConsultComponent implements OnInit {
         this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Enregistrement échoué', life: 3000 });
       },
       complete: () => this.workOrderDialog = false
+    })
+  }
+
+  saveEditWorkOrder(){
+    let wo = {
+      'id': this.workOrder.id,
+      'startDate': this.workOrderForm.get('startDate').value,
+      'orderDate':this.workOrder.orderDate,
+      'code':this.workOrderForm.get('code').value,
+      'limit': this.workOrderForm.get('limit').value,
+      'amount': this.workOrderForm.get('amount').value,
+    }
+
+
+    this.workOrderService.editWorkOrder(wo, this.order.id).subscribe({
+      next: (response: WorkOrder) => {
+        this.workOrderForm.reset();
+        this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Ordre de Travaux Enregistré", life: 3000 });
+        //refresh
+        this.getWorkOrdersByPurchaseOrder();
+      },
+      error: (e) => {
+        this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Enregistrement échoué', life: 3000 });
+      },
+      complete: () => this.editWorkOrderDialog = false
     })
   }
 
@@ -249,23 +340,28 @@ export class WorkOrderConsultComponent implements OnInit {
       'id': null,
       'item': item,
       'quantity': this.definitiveItemForm.get('quantity').value,
-      'workOrder': this.workOrder
+
     }
+
     this.definitiveOrderService.saveDefinitiveOrder(definitiveOrder,this.workOrder.id).subscribe({
       next: (response: any) => {
         this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Article Ajouté", life: 3000 });
+
+        this.defOrders.push(definitiveOrder)
         this.getPurchaseOrderByID()
         this.getWorkOrdersByPurchaseOrder()
         this.getDefinitiveOrdersByWorkOrderID(this.workOrder.id)
-        this.progressBar()
         this.model.hide();
         this.definitiveItemForm.reset();
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Ajout échoué.', life: 3000 });
-      },
+      }
     })
+  }
 
+  setPrices(){
+    this.defOrders.map(item => item.price = this.order.itemsUsed.find(i => i.item.code == item.item.code).price)
   }
 
   confirmDeleteDefOrder() {
@@ -294,7 +390,7 @@ export class WorkOrderConsultComponent implements OnInit {
 
   items_dictionary: { [key: string]: any } = {};
   total_items = 0
-  setQuantities(value: ItemUsed){
+  setQuantities(value: DefinitiveOrder){
     let dictionary: { [key: string]: any } = {};
     dictionary['A_code'] = value?.item?.code
     dictionary['B_name'] = value?.item?.name
@@ -315,11 +411,15 @@ export class WorkOrderConsultComponent implements OnInit {
         total = total + value
       }
     }
-    dictionary['D_total'] = total
+    dictionary['D_total'] = total.toFixed(2)
 
-    dictionary['E_BC'] = this.order?.itemsUsed?.find(item => item?.item?.id == value?.item?.id)?.quantity
+    //dictionary['E_BC'] = this.order?.itemsUsed?.find(item => item?.item?.id == value?.item?.id)?.quantity
 
-    dictionary['F_percentage'] = (dictionary['D_total']/dictionary['E_BC'])*100 + "%"
+    let qty = this.order?.itemsUsed?.find(item => item?.item?.id == value?.item?.id)?.quantity
+    let pu = this.order?.itemsUsed?.find(item => item?.item?.id == value?.item?.id)?.price
+    dictionary['E_Ecart'] = Math.round((((total - qty)/qty))*100).toFixed(2) + "%"
+
+    dictionary['F_mt_total_engage'] = total * pu
     this.items_dictionary[''+value?.item?.id] = dictionary
     this.total_items = this.total_items + total
   }
@@ -632,4 +732,44 @@ exportPdf() {
     });
     FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + EXCEL_EXTENSION);
 }
+
+getItemsTotal(): number {
+  return this.defOrders.reduce((total, item) => total + (item.price * item.quantity), 0);
+}
+
+// ------------ items cells editing -----------------
+
+clonedItems: { [s: string]: DefinitiveOrder } = {};
+
+onRowEditInit(item: DefinitiveOrder) {
+    this.clonedItems[item?.id as unknown as string] = { ...item };
+}
+
+onRowEditSave(item: DefinitiveOrder) {
+    if (item.quantity > 0) {
+
+      this.definitiveOrderService.editDefinitiveOrder(item,this.workOrder.id).subscribe({
+        next: (response: DefinitiveOrder) => {
+          this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Article Modifié", life: 3000 });
+          this.getPurchaseOrderByID()
+          this.getWorkOrdersByPurchaseOrder()
+          this.getDefinitiveOrdersByWorkOrderID(this.workOrder.id)
+        },
+        error: (e) => {
+          this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Modification échoué', life: 3000 });
+        },
+      })
+
+    } else {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Prix Invalide' });
+    }
+}
+
+onRowEditCancel(item: DefinitiveOrder, index: number) {
+  this.workOrder.definitiveOrders[index] = this.clonedItems[item?.id as unknown as string];
+    delete this.clonedItems[item?.id as unknown as string];
+}
+
+// ------------ end of items cells editing -----------------
+
 }

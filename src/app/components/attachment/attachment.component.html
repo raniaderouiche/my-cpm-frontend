@@ -114,7 +114,7 @@
                                               <td style="width:30%; min-width:10rem;">
                                                   <span class="p-column-title"></span>
                                                   <div class="flex justify-content-center"><button (click)="viewAttachmentMP(purchaseOrder?.id)" pButton pRipple type="button" label="Gestion Attachements"
-                                                    icon="pi pi-eye" class="p-button-raised p-button-text p-button-plain p-button-success"></button></div>
+                                                    icon="pi pi-external-link" class="p-button-raised p-button-plain"></button></div>
                                               </td>
                                         </tr>
                                     </ng-template>
@@ -233,7 +233,7 @@
                                               <td style="width:30%; min-width:10rem;">
                                                   <span class="p-column-title"></span>
                                                   <div class="flex justify-content-center"><button (click)="showWorkOrders(purchaseOrder,market)" pButton pRipple type="button" label="Sélectionner OT"
-                                                    icon="pi pi-eye" class="p-button-raised p-button-text p-button-plain p-button-success"></button></div>
+                                                    icon="pi pi-eye" class="p-button-raised p-button-plain"></button></div>
                                               </td>
                                         </tr>
                                     </ng-template>
@@ -289,7 +289,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-workOrder>
-            <tr>
+
             <tr>
               <td style="width:10%; min-width:10rem;">
                 <span class="p-column-title">code</span>
@@ -313,7 +313,7 @@
               </td>
               <td style="width:40%; min-width:10rem;">
                 <div class="flex justify-content-center text-center">
-                    <button (click)="viewAttachmentMC(workOrder?.id)" pButton pRipple type="button" label="Gestion Attachements" icon="pi pi-eye" class="p-button-raised p-button-text p-button-plain p-button-success"></button>
+                    <button (click)="viewAttachmentMC(workOrder?.id)" pButton pRipple type="button" label="Gestion Attachements" icon="pi pi-eye" class="p-button-raised p-button-outlined"></button>
                 </div>
               </td>
             </tr>

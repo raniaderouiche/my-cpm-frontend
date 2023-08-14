@@ -130,8 +130,8 @@ export class MarketDetailsComponent implements OnInit {
 
     this.detailsForm = new FormGroup({
       id: new FormControl(''),
-      name: new FormControl('', [Validators.pattern("[A-Za-z1-9 _àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
-      code: new FormControl('', [Validators.pattern("[A-Za-z1-9 _àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
+      name: new FormControl('', [Validators.pattern("[A-Za-z0-9 _/àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
+      code: new FormControl('', [Validators.pattern("[A-Za-z0-9 _/àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
       budget: new FormControl('', [Validators.required]),
       type: new FormControl('', [Validators.required]),
       unit: new FormControl('', [Validators.required]),
@@ -251,6 +251,8 @@ export class MarketDetailsComponent implements OnInit {
       'rejectionMotive': this.orderForm.get('motive').value,
       'organization': this.selectedOrganization
     }
+
+    console.log(this.order.itemsUsed)
 
     if(!this.editDialog){
       this.order.validationState = statusArray[0].name
@@ -477,6 +479,8 @@ export class MarketDetailsComponent implements OnInit {
       'quantity': this.usedItemForm.get('quantity').value,
       'price': this.usedItemForm.get('price').value,
     }
+
+
     if(this.usedItemForm.valid){
       this.itemUsedService.saveItemUsed(this.order.id, itemUsed).subscribe({
         next: (response: ItemUsed) => {
@@ -485,6 +489,7 @@ export class MarketDetailsComponent implements OnInit {
           this.getMarket();
           this.model.hide();
           this.usedItemForm.reset();
+          this.updateStateOnSave(this.order,itemUsed)
         },
         error: (e) => {
           this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Ajout échoué', life: 3000 });
@@ -517,6 +522,7 @@ export class MarketDetailsComponent implements OnInit {
         this.getPurchaseOrderByID()
         this.getMarket();
         this.deleteItemDialog = false
+        this.updateStateOnDelete(this.item)
       },
       error: (e) => {
         this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Suppression échouée', life: 3000 });
@@ -832,6 +838,7 @@ export class MarketDetailsComponent implements OnInit {
   }
 
 
+// ------------ items cells editing -----------------
 
 clonedItems: { [s: string]: ItemUsed } = {};
 
@@ -841,7 +848,7 @@ onRowEditInit(item: ItemUsed) {
 
 onRowEditSave(item: ItemUsed) {
     if (item.price > 0) {
-      console.log(item)
+
       this.itemUsedService.editItemUsed(this.order.id,item).subscribe({
         next: (response: ItemUsed) => {
           this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Article Modifié", life: 3000 });
@@ -852,6 +859,8 @@ onRowEditSave(item: ItemUsed) {
           this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Modification échoué', life: 3000 });
         },
       })
+
+      this.updateStateOnSave(this.order,item)
     } else {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Prix Invalide' });
     }
@@ -862,13 +871,19 @@ onRowEditCancel(item: ItemUsed, index: number) {
     delete this.clonedItems[item?.id as unknown as string];
 }
 
+// ------------ end of items cells editing -----------------
+
+items_total : number
 getTotal(order): number {
-  return order?.itemsUsed.reduce((total, item) => total + item.price * item.quantity, 0);
+  this.items_total = order?.itemsUsed.reduce((total, item) => total + item.price * item.quantity, 0);
+
+  return this.items_total;
 }
 
 getTotalBC(): number {
   return this.market?.purchaseOrders.reduce((total, item) => total + this.getTotal(item), 0);
 }
+
 
 getLeftoverItemsAmount():number{
   //return this.market?.amount - this.getTotalBC();
@@ -877,6 +892,50 @@ getLeftoverItemsAmount():number{
 
 getItemsPercentage(){
   return Math.round((this.getTotal(this.order) / this.order.amount) * 100) + "%"
+}
+
+updateStateOnSave(order,itemUsed){
+  let state;
+  let total = this.items_total + (itemUsed.price * itemUsed.quantity)
+  if(total == order?.amount){
+    state = "En attente"
+  }else{
+    state = "Invalide"
+  }
+
+  console.log(total)
+  console.log(order?.amount)
+  this.purchaseOrderService.changeOrderValidationState(order.id, state).subscribe({
+    next: (response: any) => {
+      this.getMarket();
+    },
+    error: (e) => {
+      console.log(e)
+    },
+    complete: () => {
+    }
+  })
+}
+
+updateStateOnDelete(item){
+  let state;
+  let total = this.items_total - (item.price * item.quantity)
+  if(total == this.order?.amount){
+    state = "En attente"
+  }else{
+    state = "Invalide"
+  }
+
+  this.purchaseOrderService.changeOrderValidationState(this.order.id, state).subscribe({
+    next: (response: any) => {
+      this.getMarket();
+    },
+    error: (e) => {
+      console.log(e)
+    },
+    complete: () => {
+    }
+  })
 }
 
 }

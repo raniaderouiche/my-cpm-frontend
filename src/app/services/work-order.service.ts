@@ -32,4 +32,8 @@ export class WorkOrderService {
   public deleteWorkOrder(id : Number):Observable<WorkOrder>{
     return this.http.delete<WorkOrder>(`${this.host}${id}`);
   }
+
+  public editWorkOrder(workOrder : WorkOrder, purchaseOrderId : number):Observable<WorkOrder>{
+    return this.http.patch<WorkOrder>(`${this.host}${purchaseOrderId}`, workOrder);
+  }
 }

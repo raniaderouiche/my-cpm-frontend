@@ -33,4 +33,8 @@ export class PurchaseOrderService {
     return this.http.get<PurchaseOrder>(`${this.host}work-order/${id}`);
   }
 
+  public changeOrderValidationState(id : Number,state : string):Observable<PurchaseOrder>{
+    return this.http.post<PurchaseOrder>(`${this.host}${id}?state=${state}`,null);
+  }
+
 }

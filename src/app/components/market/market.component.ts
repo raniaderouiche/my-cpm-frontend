@@ -80,8 +80,8 @@ export class MarketComponent implements OnInit {
 
     this.myForm = new FormGroup({
       id: new FormControl(''),
-      name: new FormControl('', [Validators.pattern("[A-Za-z1-9 _àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
-      code: new FormControl('', [Validators.pattern("[A-Za-z1-9 _àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
+      name: new FormControl('', [Validators.pattern("[A-Za-z0-9 _/àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
+      code: new FormControl('', [Validators.pattern("[A-Za-z0-9 _/àâéêèëìïîôùçæœÀÂÉÊÈËÌÏÎÔÙÛÇÆŒ-]+"), Validators.required]),
       budget: new FormControl('', [Validators.required]),
       type: new FormControl('', [Validators.required]),
       unit: new FormControl(this.selectedUnit, [Validators.required]),

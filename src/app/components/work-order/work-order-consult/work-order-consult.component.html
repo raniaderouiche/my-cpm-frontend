@@ -46,7 +46,7 @@
           <span>Ordres de Travaux</span>
           <!-- <p-badge class="ml-2" [value]="workOrders?.length"></p-badge> -->
         </ng-template>
-        <p-toolbar styleClass="mt-1">
+        <p-toolbar styleClass="mb-4">
           <ng-template pTemplate="left">
             <div>
               <button pButton pRipple label="Ajouter" icon="pi pi-plus" class="p-button-success mr-2"
@@ -106,15 +106,15 @@
                 <span class="p-column-title">code</span>
                 <div class="flex justify-content-center text-center">{{workOrder?.code}}</div>
               </td>
-              <td style="width:20%; min-width:10rem;">
+              <td style="width:15%; min-width:10rem;">
                 <span class="p-column-title">orderDate</span>
                 <div class="flex justify-content-center text-center">{{workOrder?.orderDate | date: 'dd/MM/yyyy'}}</div>
               </td>
-              <td style="width:20%; min-width:10rem;">
+              <td style="width:15%; min-width:10rem;">
                 <span class="p-column-title">startDate</span>
                 <div class="flex justify-content-center text-center">{{workOrder?.startDate | date: 'dd/MM/yyyy'}}</div>
               </td>
-              <td style="width:15%; min-width:10rem;">
+              <td style="width:10%; min-width:10rem;">
                 <span class="p-column-title">limit</span>
                 <div class="flex justify-content-center text-center">{{workOrder?.limit}}</div>
               </td>
@@ -122,18 +122,20 @@
                 <span class="p-column-title">amount</span>
                 <div class="flex justify-content-center text-center">{{workOrder?.amount}} {{this.market?.unit}}</div>
               </td>
-              <td style="width:10%; min-width:10rem;">
-                <span class="p-column-title">Article</span>
-                <button (click)="openItems(workOrder)" pButton pRipple type="button" label="Articles"
-                  icon="pi pi-shopping-cart" class="p-button-raised p-button-text p-button-plain"></button>
+              <td style="width:15%; min-width:10rem;">
+                <div class="flex justify-content-center text-center">
+                  <button (click)="openItems(workOrder)" pButton pRipple type="button" label="Articles"
+                    icon="pi pi-shopping-cart" class="p-button-raised p-button-outlined p-button-plain"></button>
+                </div>
+
               </td>
               <td style="width:10%; min-width:10rem;">
                 <div class="flex justify-content-center text-center">
-                  <button (click)="generatePDF(workOrder)" pButton pRipple icon="pi pi-print" class="p-button-rounded p-button-success mr-2"></button>
                   <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2"
                     (click)="editWorkOrder(workOrder)"></button>
-                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger mr-2"
                     (click)="deleteWorkOrder(workOrder)"></button>
+                    <button (click)="generatePDF(workOrder)" pButton pRipple icon="pi pi-print" class="p-button-rounded p-button-success "></button>
                 </div>
               </td>
             </tr>
@@ -141,7 +143,7 @@
           <!-- empty table message-->
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="6" class="text-center">Aucun Ordre de Travail trouvé.</td>
+              <td colspan="8" class="text-center">Aucun Ordre de Travail trouvé.</td>
             </tr>
           </ng-template>
         </p-table>
@@ -216,9 +218,10 @@
           <span>Suivi des engagements par Article</span>
         </ng-template>
         <div>
-          <p-table #stats [value]="items_dictionary| keyvalue" [exportHeader]="'customExportHeader'" responsiveLayout="scroll" [rows]="10" [scrollable]="true" scrollHeight="400px"
+          <p-table #stats [value]="items_dictionary| keyvalue" [exportHeader]="'customExportHeader'" responsiveLayout="scroll" [globalFilterFields]="['code']" [rows]="10"
           [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
-          currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées" selectionMode="multiple" [rowHover]="true" dataKey="id">
+          currentPageReportTemplate="Affichage {first} à {last} de {totalRecords} entrées"
+          selectionMode="multiple" [rowHover]="true" dataKey="id">
           <ng-template pTemplate="caption">
             <!-- <div class="flex">
               <button type="button" pButton pRipple icon="pi pi-file-excel" (click)="exportExcel()" class="p-button-success mr-2" pTooltip="XLS" tooltipPosition="bottom"></button>
@@ -240,19 +243,19 @@
           <ng-template pTemplate="header">
             <tr>
               <th pFrozenColumn>
-                <div class="flex justify-content-center" style="min-width:150px">Code<p-sortIcon field="code"></p-sortIcon>
+                <div class="flex justify-content-center" style="min-width:150px">Code
                 </div>
               </th>
               <th pFrozenColumn>
-                <div class="flex justify-content-center" style="min-width:150px">Nom<p-sortIcon field="name"></p-sortIcon>
+                <div class="flex justify-content-center" style="min-width:150px">Nom
                 </div>
               </th>
               <th *ngFor="let ot of workOrders;let indexOfelement=index;">
                   <div class="flex justify-content-center" style="min-width:150px">OT {{indexOfelement + 1}}</div>
               </th>
-              <th><div class="flex justify-content-center" style="min-width:150px">Total</div></th>
-              <th><div class="flex justify-content-center" style="min-width:150px">Total BC</div></th>
-              <th pFrozenColumn><div class="flex justify-content-center" style="min-width:150px">Pourcentage</div></th>
+              <th><div class="flex justify-content-center" style="min-width:150px">Total OTs</div></th>
+              <th><div class="flex justify-content-center" style="min-width:150px">Ecart par article</div></th>
+              <th pFrozenColumn><div class="flex justify-content-center" style="min-width:150px">Montant total des Ots engagés</div></th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-item>
@@ -288,12 +291,16 @@
       <form [formGroup]="workOrderForm">
         <!-- ---hidden--- -->
         <div class="field">
-          <input Item="text" hidden pInputText id="code" formControlName="id" />
+          <input Item="text" hidden pInputText id="id" formControlName="id" />
         </div>
         <!-- ---start date--- -->
 
         <div class="field">
-            <label for="startDate">Date Début *</label>
+          <label for="code">Code*</label>
+          <input Item="text" pInputText id="code" placeholder="Code OT" formControlName="code" />
+        </div>
+        <div class="field">
+            <label for="startDate">Date Début*</label>
             <p-calendar id="startDate" appendTo="body" [showIcon]="true" dateFormat="dd/mm/yy" [showButtonBar]="true" placeholder="jj/MM/aaaa"
               formControlName="startDate"></p-calendar>
             <div *ngIf="(workOrderForm.get('startDate').invalid && workOrderForm.get('startDate').dirty)">
@@ -301,9 +308,17 @@
                 obligatoire.</small>
             </div>
         </div>
+        <div class="field">
+          <label for="amount">Montant*</label>
+          <p-inputNumber placeholder="Montant planifié" formControlName="amount" [showButtons]="true" buttonLayout="horizontal" inputId="amount"
+                spinnerMode="horizontal" [step]="0.25" mode="currency" [currency]="market?.unit"
+                decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success"
+                incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+              </p-inputNumber>
+        </div>
         <div class="formgrid grid">
             <div class="field col">
-                <label for="limit">Délais *</label>
+                <label for="limit">Délais*</label>
                 <p-inputNumber inputId="limit" mode="decimal" [showButtons]="true"  [min]="0" suffix=" Jours" formControlName="limit"
                 placeholder="Délais en Jour">
                 </p-inputNumber>
@@ -320,13 +335,66 @@
     </p-footer>
   </p-dialog>
 
+  <!----------------------edit work order details dialog-------------- -->
+
+  <p-dialog [(visible)]="editWorkOrderDialog" [style]="{width: '40%'}" header="Enregistrer Ordre de Travail" [modal]="true" class="p-fluid">
+    <div class="text-500 mb-5">Veuillez remplir tous les champs obligatoires marqués par un astérisque (*).</div>
+    <ng-template pTemplate="content">
+      <form [formGroup]="workOrderForm">
+        <!-- ---hidden--- -->
+        <div class="field">
+          <input Item="text" hidden pInputText id="code" formControlName="id" />
+        </div>
+
+        <div class="field">
+          <label for="code">Code*</label>
+          <input Item="text" pInputText id="code" placeholder="Code OT" formControlName="code" />
+        </div>
+        <!-- ---start date--- -->
+
+        <div class="field">
+            <label for="startDate">Date Début*</label>
+            <p-calendar id="startDate" appendTo="body" [showIcon]="true" dateFormat="dd/mm/yy" [showButtonBar]="true" placeholder="jj/MM/aaaa"
+              formControlName="startDate"></p-calendar>
+            <div *ngIf="(workOrderForm.get('startDate').invalid && workOrderForm.get('startDate').dirty)">
+              <small class="ng-dirty ng-invalid" *ngIf="workOrderForm.get('startDate').hasError('startDate')">Date Début est
+                obligatoire.</small>
+            </div>
+        </div>
+        <div class="field">
+          <label for="amount">Montant*</label>
+          <p-inputNumber placeholder="Montant planifié" formControlName="amount" [showButtons]="true" buttonLayout="horizontal" inputId="amount"
+                spinnerMode="horizontal" [step]="0.25" mode="currency" [currency]="market?.unit"
+                decrementButtonClass="p-button-danger" incrementButtonClass="p-button-success"
+                incrementButtonIcon="pi pi-plus" decrementButtonIcon="pi pi-minus">
+              </p-inputNumber>
+        </div>
+        <div class="formgrid grid">
+            <div class="field col">
+                <label for="limit">Délais*</label>
+                <p-inputNumber inputId="limit" mode="decimal" [showButtons]="true"  [min]="0" suffix=" Jours" formControlName="limit"
+                placeholder="Délais en Jour">
+                </p-inputNumber>
+            </div>
+        </div>
+      </form>
+    </ng-template>
+
+    <p-footer>
+      <button pButton pRipple label="Annuler" icon="pi pi-times" class="p-button-text"
+        (click)="editWorkOrderDialog = false"></button>
+      <button pButton pRipple label="Enregistrer" [disabled]="workOrderForm.invalid" icon="pi pi-check" class="p-button-text"
+        (click)="saveEditWorkOrder()"></button>
+    </p-footer>
+  </p-dialog>
+
 <!-- ---------------------------article dialog--------------------------- -->
 
   <p-dialog [(visible)]="itemsDialog" header="Gestion des Articles" [modal]="true" [style]="{width:'50%'}">
     <ng-template pTemplate="content">
       <div>
         <p-table #dt1 [value]="defOrders" [paginator]="true" [rows]="5" responsiveLayout="scroll" [rowHover]="true"
-          dataKey="id" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+          dataKey="id" editMode="row" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
           [showCurrentPageReport]="true"
           [globalFilterFields]="['item.name']">
           <ng-template pTemplate="caption">
@@ -343,29 +411,58 @@
           <ng-template pTemplate="header">
             <tr>
               <th></th>
+              <th>Code</th>
               <th pSortableColumn="name">Article <p-sortIcon field="name"></p-sortIcon>
+              </th>
+              <th pSortableColumn="price">PU<p-sortIcon field="price"></p-sortIcon>
               </th>
               <th pSortableColumn="quantity">Quantité <p-sortIcon field="quantity"></p-sortIcon>
               </th>
+
               <th></th>
             </tr>
           </ng-template>
-          <ng-template pTemplate="body" let-usedItem>
-            <tr>
+          <ng-template pTemplate="body" let-item let-editing="editing" let-ri="rowIndex">
+            <tr [pEditableRow]="item">
+              <td></td>
               <td style="width: 5%; min-width: 5rem;">
-                <img src="../../../assets/layout/images/Circle-icons-tools.svg" alt="Image"  width="30">
+                {{item?.item?.code}}
               </td>
-              <td style="width: 40%; min-width: 7rem;">{{usedItem?.item?.name}}</td>
-              <td style="width: 30%; min-width: 7rem;">{{usedItem?.quantity}}</td>
+              <td style="width: 40%; min-width: 7rem;">{{item?.item?.name}}</td>
+
+              <td style="width: 30%; min-width: 7rem;">{{item?.price}} {{marketUnit}}</td>
+
+              <td style="width: 30%; min-width: 7rem;">
+                <p-cellEditor>
+                  <ng-template pTemplate="input">
+                      <p-inputNumber [(ngModel)]="item.quantity" inputId="quantity" mode="decimal" [minFractionDigits]="2" [maxFractionDigits]="5" placeholder="Quantité" required> </p-inputNumber>
+                  </ng-template>
+                  <ng-template pTemplate="output">
+                    {{item?.quantity}}
+                  </ng-template>
+              </p-cellEditor>
+              </td>
               <td style="width: 25%;">
-                <div class="flex justify-content-end flex-wrap">
-                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
-                    (click)="deleteDirectiveOrder(usedItem)"></button>
+
+                <div class="flex align-items-center justify-content-center gap-2">
+                  <button *ngIf="!editing" pButton pRipple type="button" pInitEditableRow icon="pi pi-pencil" (click)="onRowEditInit(item)" class="p-button-rounded p-button-text"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pSaveEditableRow icon="pi pi-check" (click)="onRowEditSave(item)" class="p-button-rounded p-button-text p-button-success mr-2"></button>
+                  <button *ngIf="editing" pButton pRipple type="button" pCancelEditableRow icon="pi pi-times" (click)="onRowEditCancel(item, ri)" class="p-button-rounded p-button-text p-button-danger"></button>
+                  <button *ngIf="!editing" pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-text p-button-danger"
+                  (click)="deleteDirectiveOrder(item)"></button>
                 </div>
 
               </td>
             </tr>
           </ng-template>
+          <ng-template pTemplate="footer">
+            <tr>
+              <td colspan="2"></td>
+                <td class="text-right">Total articles:</td>
+                <td>{{ getItemsTotal() }} {{ marketUnit }}</td>
+                <td colspan="2"  ></td>
+            </tr>
+        </ng-template>
           <!-- empty table message-->
         <ng-template pTemplate="emptymessage">
           <tr>
@@ -389,8 +486,8 @@
     <div>
       <div class="grid ">
         <div class="col-12">
-          <p-dataView #dv [value]="order?.itemsUsed" [paginator]="true" [rows]="9" filterBy="item.name,item.code" [sortField]="sortField"
-            [sortOrder]="sortOrder" layout="list">
+          <p-dataView #dv [value]="order?.itemsUsed" [paginator]="true" [rows]="4" filterBy="item.name,item.code" [sortField]="sortField"
+          [sortOrder]="sortOrder" layout="list">
             <ng-template pTemplate="header">
               <div class="flex flex-column md:flex-row md:justify-content-between">
                 <span class="p-input-icon-left mb-2 md:mb-0">

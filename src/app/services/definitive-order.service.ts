@@ -32,4 +32,8 @@ export class DefinitiveOrderService {
   public getDefinitiveOrdersByWorkOrderID(id : number): Observable<DefinitiveOrder[]>{
     return this.http.get<DefinitiveOrder[]>(`${this.host}filter?workorderID=${id}`);
   }
+
+  public editDefinitiveOrder(definitiveOrder : DefinitiveOrder,id: number):Observable<DefinitiveOrder>{
+    return this.http.patch<DefinitiveOrder>(`${this.host}${id}`, definitiveOrder);
+  }
 }
