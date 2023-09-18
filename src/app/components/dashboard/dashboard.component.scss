@@ -18,3 +18,130 @@
       stroke: #FFA62B;
   }
 }
+
+// .progress-container {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   height: 100px;
+// }
+
+// .progress-circle {
+//   position: relative;
+//   width: 50px;
+//   height: 50px;
+// }
+
+// svg {
+//   transform: rotate(-90deg);
+// }
+
+// .progress-background {
+//   fill: none;
+//   stroke: #F97316;
+//   stroke-width: 10;
+// }
+
+// .progress-fill {
+//   fill: none;
+//   stroke: #ffffff;
+//   stroke-width: 10;
+//   stroke-dasharray: 0;
+//   stroke-dashoffset: 0;
+//   transition: stroke-dasharray 1s ease;
+// }
+
+// .progress-text {
+//   position: absolute;
+//   top: 50%;
+//   left: 50%;
+//   transform: translate(-50%, -50%);
+//   font-size: 14px;
+//   font-weight: bold;
+//   color: #ffffff;
+// }
+
+/* CSS */
+.grid {
+  display: flex;
+  flex-wrap: wrap; /* Allow items to wrap to the next row if needed */
+}
+
+.flex-container {
+  flex: 1; /* Equal flex distribution to all children */
+  display: flex;
+  flex-direction: column; /* Stack children vertically */
+  height: 180px; /* Set a fixed height for all elements */
+  overflow: hidden; /* Hide any overflow content */
+}
+
+.smaller-chart-container {
+  width: 300px;
+  height: 300px;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: auto;
+  }
+}
+
+/* Default styles for desktop */
+.responsive-input {
+  width: 200px; /* Adjust the width for desktop screens as needed */
+}
+
+/* Media query for screens with a maximum width of 768px (typical mobile screen size) */
+@media (max-width: 768px) {
+  .responsive-input {
+    width: 100%; /* Make the input full width on mobile screens */
+  }
+}
+
+
+.progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.progress-title {
+  font-size: 13px;
+  margin-bottom: 10px;
+  color: #ffffff;
+}
+
+.progress-circle {
+  position: relative;
+  width: 50px;
+  height: 50px;
+}
+
+svg {
+  transform: rotate(-90deg);
+}
+
+.progress-background {
+  fill: none;
+  stroke: #F97316;
+  stroke-width: 10;
+}
+
+.progress-fill {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 10;
+  stroke-dasharray: 0;
+  stroke-dashoffset: 0;
+  transition: stroke-dasharray 1s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+}

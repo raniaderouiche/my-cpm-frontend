@@ -1073,7 +1073,7 @@ onRowEditInit(item: ItemRealised) {
 }
 
 onRowEditSave(itemRealised: ItemRealised) {
-    if (itemRealised.price > 0) {
+    if (itemRealised.quantity > 0) {
       this.itemsRealisedService.editItemRealised(itemRealised,itemRealised?.attachment?.id).subscribe({
         next: (response: any) => {
           this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Article Modifié", life: 3000 });

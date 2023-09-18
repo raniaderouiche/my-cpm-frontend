@@ -36,11 +36,32 @@ export class AppMenuComponent implements OnInit {
 
     if( ['SUPER_ADMIN', 'ADMIN','FINANCIER'].includes(this.authenticationService.getUserRoleFromLocalCache())){
       this.model[0]?.items.push(
+        // {
+        //   label: 'Magasins',
+        //   icon: 'pi pi-fw pi-shopping-cart',
+        //   routerLink: ['/cpm/deliveries']
+        // },
         {
-          label: 'Bons de Livraison',
+          label: 'Magasins',
           icon: 'pi pi-fw pi-shopping-cart',
-          routerLink: ['/cpm/deliveries']
-        },
+          items: [
+              {
+                  label: "Gestion Magasins",
+                  icon: 'pi pi-fw pi-circle',
+                  routerLink: ['/cpm/business_sectors']
+              },
+              {
+                  label: "Stock",
+                  icon: 'pi pi-fw pi-circle',
+                  routerLink: ['/cpm/professions']
+              },
+              {
+                label: "Bons de Livraison",
+                icon: 'pi pi-fw pi-circle',
+                routerLink: ['/cpm/deliveries']
+              },
+          ]
+      },
       )
     }
 

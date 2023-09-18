@@ -1,49 +1,224 @@
-<div>
+<div class="p-5 flex flex-column flex-auto">
   <div class="grid">
-    <div class="col-4">
-      <div class="card">
-        <div>
-          <p-chart type="pie" [data]="prof_sector_data" [options]="chartOptions"  [style]="{'width': '40%'}"></p-chart>
-          <div class="text-center mt-4"><h5>Nombre des métiers par secteur</h5></div>
+    <div class="col-12">
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-3 p-3">
+          <div class="p-3 text-center bg-blue-500 border-round flex-container">
+            <div class="mt-3">
+              <div>
+                <span
+                  class="inline-flex justify-content-center align-items-center bg-blue-600 border-circle mb-3 p-3"><i
+                    class="pi pi-shopping-bag text-xl text-white"></i></span>
+              </div>
+              <div class="text-2xl font-medium text-white mb-2">{{numberOfMarkets}}</div>
+              <span class="text-blue-100 font-medium">Nombre des Marchés</span>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3 p-3">
+          <div class="p-3 text-center bg-purple-500 border-round flex-container">
+            <div class="mt-3">
+              <div><span
+                  class="inline-flex justify-content-center align-items-center bg-purple-600 border-circle mb-3 p-3"><i
+                    class="pi pi-money-bill text-xl text-white"></i></span>
+                <div class="text-2xl font-medium text-white mb-2">{{montantMarcheTotal | numberAbbreviation}}</div><span
+                  class="text-purple-100 font-medium">Montant des marchés</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3 p-3">
+          <div class="p-3 text-center bg-indigo-500 border-round flex-container">
+            <div class="mt-3">
+              <div>
+                <span
+                  class="inline-flex justify-content-center align-items-center bg-indigo-600 border-circle mb-3 p-3"><i
+                    class="pi pi-shopping-cart text-xl text-white"></i></span>
+                <div class="text-2xl font-medium text-white mb-2">{{montantEngage | numberAbbreviation}}</div><span
+                  class="text-indigo-100 font-medium">Montant engagé</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 md:col-6 lg:col-3 p-3">
+          <div class="p-3 text-center bg-orange-500 border-round flex-container">
+            <div class="inline-flex justify-content-center align-items-center">
+              <div class="grid">
+                <div class="col-6">
+                  <!-- percentage -->
+                  <div class="progress-container">
+                    <h2 class="progress-title">Engagé</h2>
+                    <div class="progress-circle">
+                      <svg viewBox="0 0 100 100">
+                        <circle class="progress-background" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-fill" cx="50" cy="50" r="45" [style.strokeDasharray]="circumference"
+                          [style.strokeDashoffset]="circumference * (1 - percentage / 100)"></circle>
+                      </svg>
+                      <div class="progress-text">{{ percentage }}%</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <!-- percentage -->
+                  <div class="progress-container">
+                    <h2 class="progress-title">Total</h2>
+                    <div class="progress-circle">
+                      <svg viewBox="0 0 100 100">
+                        <circle class="progress-background" cx="50" cy="50" r="45"></circle>
+                        <circle class="progress-fill" cx="50" cy="50" r="45" [style.strokeDasharray]="circumference"
+                          [style.strokeDashoffset]="circumference * (1 - percentage2 / 100)"></circle>
+                      </svg>
+                      <div class="progress-text">{{ percentage2 }}%</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="text-2xl font-medium text-white mb-2">{{montantTR | numberAbbreviation}}</div><span
+              class="text-orange-100 font-medium">Montant des travaux réalisés</span>
+          </div>
         </div>
       </div>
     </div>
-    <div class="col-8">
-      <div class="card">
-        <h5>Nombre d'utilisateurs par organisation</h5>
-        <p-chart type="bar" [data]="users_orgs_data" [options]="basicOptions"></p-chart>
-    </div>
-    </div>
-    <div class="col-12">
-      <div class="card">
-        <h5>Nombre des marchés par organisation</h5>
-        <p-chart type="bar" [data]="market_orgs_data" [options]="basicOptions"></p-chart>
-    </div>
-    </div>
-  </div>
-</div>
 
-<div>
-  <div class="grid">
-    <div class="col-8">
-      <div>
-        <div class="card">
-          <h5>Nombre de marchés par metier</h5>
-          <p-chart type="bar" [data]="market_profession_data" [options]="basicOptions"></p-chart>
+    <div class="col-12 lg:col-6">
+
+      <div class="shadow-2 surface-card border-round p-3">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center">
+            <span class="text-xl font-medium text-900 ml-2">Sélectionner Marché</span>
+          </div>
+          <p-dropdown [options]="marketTypes" [(ngModel)]="selectedType" (onChange)="onDropdownChange()" optionLabel="name"></p-dropdown>
+        </div>
+        <div class="mt-3">
+          <p-scrollPanel [style]="{ width: '100%', height: '200px' }">
+            <div *ngFor="let market of marketsList" class="field-checkbox">
+              <div class="w-full">
+                <div
+                  class="surface-card border-2 p-3 border-round-top flex align-items-center cursor-pointer surface-border">
+                  <div class="w-4 flex align-items-center pr-4">
+                    <p-radioButton [inputId]="market" name="category" [value]="market" [(ngModel)]="selectedMarket"
+                      (click)="onRadioSelect(market)"></p-radioButton>
+                    <label [for]="market" class="font-medium ml-3">{{ market?.name }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-scrollPanel>
+        </div>
       </div>
+
+      <div class="surface-card shadow-2 border-round p-4 mt-4">
+        <div class="flex align-items-center justify-content-between mb-4"><span
+            class="text-xl font-medium text-900">Détails du marché par BC</span></div>
+
+        <div class="flex justify-content-center flex-wrap surface-border border-1 border-round p-3 mb-4">
+          <div class="flex align-items-center justify-content-center" *ngIf="selectedMarket == null">
+            <div>
+              <span>Aucun marché sélectionné</span>
+            </div>
+          </div>
+          <div class="smaller-chart-container">
+            <p-chart type="pie" [data]="pieData"></p-chart>
+          </div>
+        </div>
+
+        <div class="surface-border border-1 border-round flex p-3 flex-column md:flex-row">
+          <div class="border-bottom-1 md:border-right-1 md:border-bottom-none surface-border flex-auto p-3">
+            <div class="flex align-items-center mb-3"><i class="pi pi-money-bill text-blue-500 text-xl mr-2"></i><span
+                class="text-500 font-medium">Montant</span></div><span
+              class="block text-900 font-medium mb-4 text-xl">{{selectedMarket?.amount | numberAbbreviation}}
+              {{selectedMarket?.unit}}</span>
+          </div>
+          <div class="border-bottom-1 md:border-right-1 md:border-bottom-none surface-border flex-auto p-3">
+            <div class="flex align-items-center mb-3"><i
+                class="pi pi-shopping-bag text-orange-500 text-xl mr-2"></i><span class="text-500 font-medium">Montant
+                engagé</span></div><span class="block text-900 font-medium mb-4 text-xl">{{mtEngageMarche |
+              numberAbbreviation}} {{selectedMarket?.unit}}</span>
+          </div>
+          <div class="flex-auto p-3">
+            <div class="flex align-items-center mb-3"><i
+                class="pi pi-shopping-cart text-purple-500 text-xl mr-2"></i><span class="text-500 font-medium">Montant
+                des travaux réalisés</span></div><span class="block text-900 font-medium mb-4 text-xl">{{mtTRMarche |
+              numberAbbreviation}} {{selectedMarket?.unit}}</span>
+          </div>
+        </div>
       </div>
+
+
     </div>
-    <div class="col-4">
-      <div class="card">
-      <p-chart type="doughnut" [data]="markets_type_data" [options]="chartOptions" [style]="{'width': '40%'}"></p-chart>
-      <div class="text-center mt-4"><h5>Nombre des marchés par type</h5></div>
-    </div>
-    </div>
-    <div class="col-12">
-      <div class="card">
-        <h5>Montant des marchés</h5>
-        <p-chart type="bar" [data]="amount_by_market_data" [options]="basicOptions"></p-chart>
-    </div>
+
+    <div class="col-12 lg:col-6">
+      <div class="shadow-2 surface-card border-round p-3">
+        <div class="flex align-items-center justify-content-between">
+          <div class="flex align-items-center">
+            <span class="text-xl font-medium text-900 ml-2">Sélectionner Bon de Commandes</span>
+          </div>
+          <div>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input type="text" pInputText placeholder="Rechercher" (input)="onInputChange($event)" class="responsive-input"/>
+            </span>
+          </div>
+
+        </div>
+        <div class="mt-3">
+          <p-scrollPanel [style]="{ width: '100%', height: '200px' }">
+            <div class="w-full" *ngIf="purchase_ordersList.length == 0">
+              <div
+                class="surface-card border-2 p-3 border-round-top flex align-items-center cursor-pointer surface-border">
+                <div class="w-4 flex align-items-center pr-4">
+                  Aucun marché sélectionné
+                </div>
+              </div>
+            </div>
+            <div *ngFor="let order of purchase_ordersList" class="field-checkbox">
+              <div class="w-full">
+                <div
+                  class="surface-card border-2 p-3 border-round-top flex align-items-center cursor-pointer surface-border">
+                  <div class="w-4 flex align-items-center pr-4">
+                    <p-radioButton [inputId]="order" name="category" [value]="order" [(ngModel)]="selectedOrder"
+                      (click)="onRadioSelectOrder(order)"></p-radioButton>
+                    <label [for]="order" class="font-medium ml-3">BC: {{ order?.code }}</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </p-scrollPanel>
+        </div>
+      </div>
+
+      <div class="surface-card shadow-2 border-round p-4 mt-4">
+        <div class="flex align-items-center justify-content-between mb-4"><span
+            class="text-xl font-medium text-900">Détails du BC par OT</span></div>
+
+        <div class="flex justify-content-center flex-wrap surface-border border-1 border-round p-3 mb-4">
+          <div class="flex align-items-center justify-content-center" *ngIf="selectedOrder == null">
+            <div>
+              <span>Aucun BC sélectionné</span>
+            </div>
+          </div>
+          <div class="smaller-chart-container">
+            <p-chart type="doughnut" [data]="doughnutData"></p-chart>
+          </div>
+        </div>
+
+        <div class="surface-border border-1 border-round flex p-3 flex-column md:flex-row">
+          <div class="border-bottom-1 md:border-right-1 md:border-bottom-none surface-border flex-auto p-3">
+            <div class="flex align-items-center mb-3"><i class="pi pi-money-bill text-blue-500 text-xl mr-2"></i><span
+                class="text-500 font-medium">Montant</span></div><span
+              class="block text-900 font-medium mb-4 text-xl">{{selectedOrder?.amount | numberAbbreviation}}
+              {{selectedMarket?.unit}}</span>
+          </div>
+          <div class="flex-auto p-3">
+            <div class="flex align-items-center mb-3"><i class="pi pi-calendar text-purple-500 text-xl mr-2"></i><span
+                class="text-500 font-medium">Délais</span></div><span
+              class="block text-900 font-medium mb-4 text-xl">{{selectedOrder?.limit}} Jours</span>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

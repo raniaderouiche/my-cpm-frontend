@@ -41,6 +41,14 @@ export class AttachmentService {
     return this.http.delete<Attachment>(`${this.host}${id}`);
   }
 
+  public getAttachmentSumAmount(): Observable<number>{
+    return this.http.get<number>(`${this.host}sum`);
+  }
+
+  public getAttachmentSumAmountByMarket(id : Number): Observable<number>{
+    return this.http.get<number>(`${this.host}sum/market/${id}`);
+  }
+
   setAttachmentType(type : any){
     this.source.next(type)
   }

@@ -101,7 +101,7 @@ export class WorkOrderConsultComponent implements OnInit {
       id: new FormControl(''),
       code: new FormControl('', [Validators.required]),
       startDate: new FormControl('',[Validators.required]),
-      amount: new FormControl('', [Validators.required]),
+      amount: new FormControl(''),
       limit: new FormControl('', [Validators.required]),
     })
 

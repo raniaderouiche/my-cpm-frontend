@@ -83,6 +83,10 @@ import { AttachmentManageComponent } from './components/attachment/attachment-ma
 import { DeliveryComponent } from './components/delivery/delivery.component';
 import { DeliveryManageComponent } from './components/delivery/delivery-manage/delivery-manage.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { VirtualScrollerModule } from 'primeng/virtualscroller';
+import { ScrollPanelModule } from 'primeng/scrollpanel';
+import { NumberAbbreviationPipe } from './services/pipes/number-abbreviation.pipe';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @NgModule({
   declarations: [
@@ -112,7 +116,8 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AttachmentManageComponent,
     DeliveryComponent,
     DeliveryManageComponent,
-    DashboardComponent
+    DashboardComponent,
+    NumberAbbreviationPipe
   ],
   imports: [
     BrowserModule,
@@ -123,10 +128,13 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
     AppRoutingModule,
     DividerModule,
     CommonModule,
+    ProgressSpinnerModule,
     FieldsetModule,
     ProgressBarModule,
     StyleClassModule,
     ChartModule,
+    VirtualScrollerModule,
+    ScrollPanelModule,
     PanelModule,
     ButtonModule,
     TimelineModule,
