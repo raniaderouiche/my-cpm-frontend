@@ -132,3 +132,9 @@
   background: rgba($color: #da1717, $alpha: 1.0);
   color: var(--primary-color-text);
 }
+
+.partial-collapse-content {
+  max-height: 100px; /* Adjust the height as needed */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}

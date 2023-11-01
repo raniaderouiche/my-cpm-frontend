@@ -7,6 +7,7 @@ export interface WorkOrder{
     id? : number;
 
     code? : string;
+    description? : string;
     orderDate? : Date;
     startDate? : Date;
     limit? : number;

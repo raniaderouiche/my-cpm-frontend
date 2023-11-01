@@ -153,14 +153,14 @@
       <div class="shadow-2 surface-card border-round p-3">
         <div class="flex align-items-center justify-content-between">
           <div class="flex align-items-center">
-            <span class="text-xl font-medium text-900 ml-2">Sélectionner Bon de Commandes</span>
+            <span class="text-xl font-medium text-900 ml-2 mb-4">Sélectionner Bon de Commandes</span>
           </div>
-          <div>
+          <!-- <div>
             <span class="p-input-icon-left">
               <i class="pi pi-search"></i>
-              <input type="text" pInputText placeholder="Rechercher" (input)="onInputChange($event)" class="responsive-input"/>
+              <input type="text" pInputText placeholder="Rechercher" [(ngModel)]="searchTerm" (keyup)="filterList()" class="responsive-input"/>
             </span>
-          </div>
+          </div> -->
 
         </div>
         <div class="mt-3">

@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   users: User[] = [];
   organizations : Organization[] = [];
   markets : Market[] = []
-  purchase_orders : PurchaseOrder[] = []
+  purchase_orders : PurchaseOrder[];
 
 
   selectedMarket: Market;
@@ -264,9 +264,17 @@ getPurchaseOrders() {
     if(inputValue == ""){
       this.purchase_ordersList = this.purchase_orders
     }else{
-      this.purchase_ordersList = this.purchase_orders.filter(i => i.code.includes(inputValue))
+      this.purchase_ordersList = this.purchase_orders.filter(i=>i.code.includes(this.searchTerm.toString()))
     }
 
+  }
+
+  searchTerm: string = '';
+
+  filterList() {
+    console.log('Search term:', this.searchTerm);
+    console.log('Search term:', this.purchase_orders.find(i=>i.code === "39BC2023"));
+    this.purchase_ordersList = this.purchase_orders.filter(i=>i.code.includes(this.searchTerm.toString()));
   }
 
 }

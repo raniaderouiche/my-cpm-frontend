@@ -39,8 +39,8 @@ export class WaitingRequestsComponent implements OnInit {
     this.getWaitingOrganisations();
 
     this.validationSelect = [
-      {icon: 'pi pi-check', name: 'Valider'},
-      {icon: 'pi pi-times', name: 'Rejeter'},
+      {icon: 'pi pi-check', name: 'Valider', value: 'true'},
+      {icon: 'pi pi-times', name: 'Rejeter', value: 'false'},
     ];
   }
 
@@ -88,14 +88,14 @@ export class WaitingRequestsComponent implements OnInit {
 
   save(id){
 
-    if(this.selectValue.value){
+    if(this.selectValue){
       this.organizationService.activateOrganization(id).subscribe(
         (data) => {
           this.messageService.add({severity:'success', summary:'Organisation activée', detail:'L\'organisation a été activée avec succès'});
           this.getWaitingOrganisations();
         }
       );
-    }else if(!this.selectValue.value){
+    }else if(!this.selectValue){
       this.organizationService.rejectOrganization(id).subscribe(
         (data) => {
           this.messageService.add({severity:'success', summary:'Organisation rejetée', detail:'L\'organisation a été rejetée avec succès'});

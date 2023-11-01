@@ -1073,11 +1073,12 @@ onRowEditInit(item: ItemRealised) {
 }
 
 onRowEditSave(itemRealised: ItemRealised) {
+  console.log(itemRealised)
     if (itemRealised.quantity > 0) {
-      this.itemsRealisedService.editItemRealised(itemRealised,itemRealised?.attachment?.id).subscribe({
+      this.itemsRealisedService.editItemRealised(itemRealised,this.attachment?.id).subscribe({
         next: (response: any) => {
           this.messageService.add({ severity: 'success', summary: 'Succès', detail: "Article Modifié", life: 3000 });
-          this.getItemsRealisedByAttachmentId(itemRealised?.attachment?.id)
+          this.getItemsRealisedByAttachmentId(this.attachment?.id)
         },
         error: (e) => {
           this.messageService.add({ severity: 'error', summary: 'Erreur', detail: 'Ajout échoué', life: 3000 });

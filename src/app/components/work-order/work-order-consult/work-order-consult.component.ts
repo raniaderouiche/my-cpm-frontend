@@ -71,6 +71,8 @@ export class WorkOrderConsultComponent implements OnInit {
 
   editWorkOrderDialog: boolean = false
 
+  showAlert : boolean = true
+
   constructor(private route : ActivatedRoute,
     private messageService: MessageService,
     private marketService: MarketService,
@@ -100,6 +102,7 @@ export class WorkOrderConsultComponent implements OnInit {
     this.workOrderForm = new FormGroup({
       id: new FormControl(''),
       code: new FormControl('', [Validators.required]),
+      description: new FormControl(''),
       startDate: new FormControl('',[Validators.required]),
       amount: new FormControl(''),
       limit: new FormControl('', [Validators.required]),
@@ -216,6 +219,7 @@ export class WorkOrderConsultComponent implements OnInit {
     console.log(this.workOrder.definitiveOrders)
     this.workOrderForm.get('id').setValue(this.workOrder)
     this.workOrderForm.get('code').setValue(workOrder.code)
+    this.workOrderForm.get('description').setValue(workOrder.description)
     this.workOrderForm.get('startDate').setValue(new Date(workOrder.startDate))
     this.workOrderForm.get('limit').setValue(workOrder.limit)
     this.workOrderForm.get('amount').setValue(workOrder.amount)
@@ -262,6 +266,7 @@ export class WorkOrderConsultComponent implements OnInit {
     this.workOrder = {
       'id': this.workOrderForm.get('id').value,
       'startDate': this.workOrderForm.get('startDate').value,
+      'description': this.workOrderForm.get('description').value,
       'limit': this.workOrderForm.get('limit').value,
       'code':this.workOrderForm.get('code').value,
       'amount': this.workOrderForm.get('amount').value,
@@ -285,6 +290,7 @@ export class WorkOrderConsultComponent implements OnInit {
     let wo = {
       'id': this.workOrder.id,
       'startDate': this.workOrderForm.get('startDate').value,
+      'description': this.workOrderForm.get('description').value,
       'orderDate':this.workOrder.orderDate,
       'code':this.workOrderForm.get('code').value,
       'limit': this.workOrderForm.get('limit').value,
@@ -432,6 +438,16 @@ export class WorkOrderConsultComponent implements OnInit {
 
   goToMarket(){
     this.router.navigate(['cpm/markets/',this.market.id]);
+  }
+
+  getWOTotal(){
+    return this.workOrders.reduce((total, order) => total + order.amount, 0)
+  }
+
+  //count used budget in percentage
+  getUsedBudget() {
+    // return (this.spendedBudget/this.market.amount)*100
+    return Math.round((this.getWOTotal() / this.order?.amount) * 100) + "%"
   }
 
   generatePDF(workorder: WorkOrder) {

@@ -1,6 +1,6 @@
 import { PurchaseOrder } from './../../../models/PurchaseOrder';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, ParamMap } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -96,6 +96,7 @@ export class MarketDetailsComponent implements OnInit {
     private messageService: MessageService,
     private router: Router,
     private sanitizer: DomSanitizer,
+    private el: ElementRef, private renderer: Renderer2,
     private organizationService : OrganizationService,
     private authenticationService : AuthenticationService,
     private professionService: ProfessionService,
@@ -228,6 +229,8 @@ export class MarketDetailsComponent implements OnInit {
         case 'Valide':
             return 'success';
         case 'Invalide':
+            return 'warning';
+        case 'Erreur de saisie':
             return 'warning';
         case 'Rejetée':
             return 'danger';
@@ -537,7 +540,9 @@ export class MarketDetailsComponent implements OnInit {
   }
 
   openAddArticleDialog() {
-    this.AddArticlesDialog = true
+    if(this.order?.validationState != 'Valide'){
+      this.AddArticlesDialog = true
+    }
   }
 
   viewAttachment(order) {
@@ -936,6 +941,17 @@ updateStateOnDelete(item){
     complete: () => {
     }
   })
+}
+
+isCollapsed = true; // Initial state
+
+toggleCollapse() {
+  this.isCollapsed = !this.isCollapsed;
+  const content = this.el.nativeElement.querySelector('.partial-collapse-content');
+  if (content) {
+    const maxHeight = this.isCollapsed ? '90px' : 'none'; // Adjust the height accordingly
+    this.renderer.setStyle(content, 'maxHeight', maxHeight);
+  }
 }
 
 }
